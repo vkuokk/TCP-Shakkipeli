@@ -1,4 +1,4 @@
-package shakkipeli;
+package Shakkipeli;
 
 public class Knight {
 }
