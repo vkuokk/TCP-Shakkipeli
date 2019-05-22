@@ -41,11 +41,15 @@ public class Shakkicontroller implements Initializable{
         // Luo shakkinappulat
         Game game = new Game(fxChessgrid);
 
+        Client client = null;
         try {
-            joinServer(IPString, PortString);
+            client = new Client(InetAddress.getByName(IPString), Integer.parseInt(PortString));
+            System.out.println(InetAddress.getByName(IPString));
+            //client.start();
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
+        client.start();
     }
 
 
@@ -67,7 +71,8 @@ public class Shakkicontroller implements Initializable{
             localPort = name;
         });
 
-
+        Thread palvelin = new Server(Integer.parseInt(localPort));
+        palvelin.start();
     }
 
 
@@ -93,6 +98,7 @@ public class Shakkicontroller implements Initializable{
     */
 
     //TCP-asiakas
+    /*
     public void joinServer(String IP, String portti) throws UnknownHostException {
         try {
             Socket socket = new Socket(InetAddress.getByName(IPString), Integer.parseInt(PortString));
@@ -104,6 +110,8 @@ public class Shakkicontroller implements Initializable{
             e.printStackTrace();
         }
     }
+    */
+
 
 
     public void createBoard(){
