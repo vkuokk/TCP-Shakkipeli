@@ -60,7 +60,8 @@ public class Shakkicontroller implements Initializable{
         System.out.println(msg);
         fxChatbox.clear();
         fxChatfield.appendText(msg + "\n");
-        palvelin.send(msg);
+        if(isServer)palvelin.send(msg);
+        if(!isServer)asiakas.send(msg);
 
     }
 
