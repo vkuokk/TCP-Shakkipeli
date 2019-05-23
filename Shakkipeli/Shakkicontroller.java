@@ -58,11 +58,10 @@ public class Shakkicontroller implements Initializable{
     @FXML void handleChat(){
         String msg = fxChatbox.getText();
         System.out.println(msg);
-        fxChatbox.clear();
         fxChatfield.appendText(msg + "\n");
         if(isServer)palvelin.send(msg);
         if(!isServer)asiakas.send(msg);
-
+        fxChatbox.clear();
     }
 
 

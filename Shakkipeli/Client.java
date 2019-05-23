@@ -16,7 +16,11 @@ public class Client extends Thread {
     }
 
     public void send(String message) {
-        t_out.out(message);
+        try {
+            t_out.out.writeObject(message);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -77,6 +81,7 @@ public class Client extends Thread {
         public void out(Serializable msg){
             try {
                 out.writeObject(msg);
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -85,7 +90,7 @@ public class Client extends Thread {
         @Override
         public void run() {
             try {
-                PrintStream out = new PrintStream(csock.getOutputStream());
+                out = new ObjectOutputStream(csock.getOutputStream());
 
             } catch (IOException e) {
                 e.printStackTrace();
