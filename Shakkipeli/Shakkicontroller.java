@@ -6,20 +6,22 @@ import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import Shakkipeli.Server;
+
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.ObjectOutputStream;
 import java.net.*;
-import java.io.*;
 import java.util.ResourceBundle;
 import java.util.Optional;
-import java.util.Scanner;
 
 import javafx.scene.control.TextInputDialog;
 
 
 public class Shakkicontroller implements Initializable{
     private Game game;
+    private boolean isServer = true;
+    private Server palvelin;
+    private Client asiakas;
 
     private String IPString;
     private String PortString;
@@ -33,7 +35,9 @@ public class Shakkicontroller implements Initializable{
     @FXML private TextArea fxChatfield;
     @FXML private GridPane fxChessgrid;
 
+    //Liittymisnapin tapahtuma
     @FXML void handleLiity(){
+        isServer = false;
         System.out.println(IPString);
         System.out.println(PortString);
         createBoard();
@@ -41,15 +45,23 @@ public class Shakkicontroller implements Initializable{
         // Luo shakkinappulat
         Game game = new Game(fxChessgrid);
 
-        Client client = null;
         try {
-            client = new Client(InetAddress.getByName(IPString), Integer.parseInt(PortString));
+            asiakas = new Client(InetAddress.getByName(IPString), Integer.parseInt(PortString));
             System.out.println(InetAddress.getByName(IPString));
             //client.start();
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
-        client.start();
+        asiakas.start();
+    }
+
+    @FXML void handleChat(){
+        String msg = fxChatbox.getText();
+        System.out.println(msg);
+        fxChatbox.clear();
+        fxChatfield.appendText(msg + "\n");
+        palvelin.send(msg);
+
     }
 
 
@@ -71,7 +83,7 @@ public class Shakkicontroller implements Initializable{
             localPort = name;
         });
 
-        Thread palvelin = new Server(Integer.parseInt(localPort));
+        palvelin = new Server(Integer.parseInt(localPort));
         palvelin.start();
     }
 

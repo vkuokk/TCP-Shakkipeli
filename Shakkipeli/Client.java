@@ -1,30 +1,35 @@
 package Shakkipeli;
 
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintStream;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 
 public class Client extends Thread {
     public int port;
     public InetAddress ia;
+    public trafficIn t_in;
+    public trafficOut t_out;
 
     public Client(InetAddress ina, int portti){
         this.ia = ina;
         this.port = portti;
     }
+
+    public void send(String message) {
+        t_out.out(message);
+    }
+
     @Override
     public void run() {
         while(true){
             try {
                 Socket soc = new Socket(ia,port);
                 System.out.println("soketti luotu " + ia.toString() + port);
-                Thread t_in = new trafficIn(soc);
-                Thread t_out = new trafficOut(soc);
+                t_in = new trafficIn(soc);
+                t_out = new trafficOut(soc);
                 t_in.start();
                 t_out.start();
+                System.out.println(t_in.in());
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -32,14 +37,28 @@ public class Client extends Thread {
     }
     private class trafficIn extends Thread{
         private Socket ssock;
+        private ObjectInputStream in;
+        private String vastaanotettu;
+
         public trafficIn(Socket client) {
             this.ssock = client;
         }
+
+        public String in(){
+            try {
+                return in.readUTF();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return "ei viestiä";
+        }
+
         @Override
         public void run() {
             try {
                 while(true) {
-                    InputStream in = new BufferedInputStream(ssock.getInputStream());
+                    in = new ObjectInputStream(ssock.getInputStream());
+                    vastaanotettu = in.readUTF();
                     System.out.println(in);
                 }
             } catch (IOException e) {
@@ -49,8 +68,18 @@ public class Client extends Thread {
     }
     private class trafficOut extends Thread {
         private Socket csock;
+        private ObjectOutputStream out;
+
         public trafficOut(Socket client) {
             this.csock = client;
+        }
+
+        public void out(Serializable msg){
+            try {
+                out.writeObject(msg);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         @Override
