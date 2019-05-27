@@ -7,6 +7,7 @@ import javafx.beans.Observable;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Random;
 
 public class Server extends Thread {
     public int portti;
@@ -33,17 +34,26 @@ public class Server extends Thread {
     public void run() {
         try {
             ServerSocket s = new ServerSocket(portti);
+            String[] side ={"musta", "valkoinen"};
+            final String puoli;
+            Random random = new Random();
+            puoli = side[random.nextInt(side.length)];
+
             while(true) {
 
                 Socket sock = s.accept();
                 System.out.println("soketti hyväksytty");
+                shc.setPuoli(puoli);
+                shc.getFxChatfield().appendText("Pelaaja liittyi osoittesta "+ sock.getInetAddress().toString() + "\n");
                 t_in = new trafficIn(sock);
                 t_in.start();
                 //uutta
                 t_out = new trafficOut(sock);
                 t_out.start();
+                //luodaan peli
+
                 Platform.runLater(()-> {
-                    shc.createBoard();
+                    shc.aloitaPeli(puoli);
                 });
             }
         } catch (IOException e) {
@@ -89,6 +99,8 @@ public class Server extends Thread {
                 try{
                     System.out.println("yritetään lukea viestiä");
                     line = inp.readLine();
+                    shc.appendText(line);
+                    //shc.getFxChatfield().appendText(line + "\n");
                     //if(line!=null)System.out.println(line);
                     //line = inp.readLine();
                     System.out.println(line);

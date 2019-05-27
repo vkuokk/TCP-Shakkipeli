@@ -23,7 +23,6 @@ public class Client extends Thread {
 
     @Override
     public void run() {
-        while(true){
             try {
                 Socket soc = new Socket(ia,port);
                 System.out.println("soketti luotu " + ia.toString() + port);
@@ -33,7 +32,7 @@ public class Client extends Thread {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
+
     }
     private class trafficIn extends Thread{
         private Socket ssock;

@@ -24,6 +24,7 @@ public class Shakkicontroller implements Initializable{
     private Client asiakas;
     private boolean listenToClient = true;
 
+    private String puoli;
     private String IPString;
     private String PortString;
 
@@ -42,7 +43,7 @@ public class Shakkicontroller implements Initializable{
         isServer = false;
         System.out.println(IPString);
         System.out.println(PortString);
-        createBoard();
+        //createBoard();
 
         // Luo shakkinappulat
         Game game = new Game(fxChessgrid);
@@ -91,7 +92,23 @@ public class Shakkicontroller implements Initializable{
         //kuuntele();
     }
 
+    public void aloitaPeli(String puoli){
+        createBoard();
+        fxChatfield.appendText("Olet pelaaja: " + puoli + "\n");
+    }
 
+    public TextArea getFxChatfield(){
+        return fxChatfield;
+    }
+
+    public void setPuoli(String puoli){
+        this.puoli = puoli;
+    }
+
+    public void appendText(String text){
+        if(puoli == "musta") fxChatfield.appendText("valkoinen: " + text + "\n");
+        else fxChatfield.appendText("musta: "+ text + "\n");
+    }
 
 
 
