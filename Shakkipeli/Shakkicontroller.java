@@ -22,6 +22,7 @@ public class Shakkicontroller implements Initializable{
     private boolean isServer = true;
     private Server palvelin;
     private Client asiakas;
+    private boolean listenToClient = true;
 
     private String IPString;
     private String PortString;
@@ -37,6 +38,7 @@ public class Shakkicontroller implements Initializable{
 
     //Liittymisnapin tapahtuma
     @FXML void handleLiity(){
+        listenToClient = false;
         isServer = false;
         System.out.println(IPString);
         System.out.println(PortString);
@@ -83,46 +85,19 @@ public class Shakkicontroller implements Initializable{
             localPort = name;
         });
 
-        palvelin = new Server(Integer.parseInt(localPort));
+        palvelin = new Server(Integer.parseInt(localPort), this);
+        //Thread p = new Thread(palvelin);
         palvelin.start();
+        //kuuntele();
     }
 
 
 
 
 
-    /*
-    public void createServer(String portti){
-        try (ServerSocket listener = new ServerSocket(Integer.parseInt(localPort))){
-            /*while(true){
-                try(Socket socket = listener.accept()) {
-                    PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-                    out.println("yhteys");
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
 
-            }
-            } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-    }
-    */
 
-    //TCP-asiakas
-    /*
-    public void joinServer(String IP, String portti) throws UnknownHostException {
-        try {
-            Socket socket = new Socket(InetAddress.getByName(IPString), Integer.parseInt(PortString));
-            Scanner in = new Scanner(socket.getInputStream());
-            while(in.hasNextLine()){
-                System.out.println(in.nextLine());
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    */
+
 
 
 
@@ -141,6 +116,7 @@ public class Shakkicontroller implements Initializable{
 
                 square.setFill(color);
                 //square.setStyle("-fx-background-color: "+BLACK+";");
+
                 fxChessgrid.add(square, i, j);
                 square.widthProperty().bind(fxChessgrid.widthProperty().divide(8));
                 square.heightProperty().bind(fxChessgrid.heightProperty().divide(8));
@@ -151,5 +127,6 @@ public class Shakkicontroller implements Initializable{
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         alusta();
+        //kuuntele();
     }
 }

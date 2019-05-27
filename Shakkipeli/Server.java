@@ -1,19 +1,27 @@
 package Shakkipeli;
 
+
+import javafx.application.Platform;
+import javafx.beans.Observable;
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
-public class Server extends Thread{
+public class Server extends Thread {
     public int portti;
     public trafficIn t_in;
     public trafficOut t_out;
     private ObjectOutputStream out;
+    private Shakkicontroller shc;
 
-    public Server(int port){
+    public Server(int port, Shakkicontroller shc){
         this.portti = port;
+        this.shc = shc;
+    }
+
+    public String getMessage(){
+        return t_in.in();
     }
 
 
@@ -24,22 +32,26 @@ public class Server extends Thread{
     @Override
     public void run() {
         try {
+            ServerSocket s = new ServerSocket(portti);
+            while(true) {
 
-            System.out.println("odotetaan pelaajaa");
-            while(true){
-                ServerSocket ssock = new ServerSocket(portti);
-                System.out.println("soketti auki "+ portti);
-                Socket client = ssock.accept();
-                t_in = new trafficIn(client);
-                t_out = new trafficOut(client);
+                Socket sock = s.accept();
+                System.out.println("soketti hyväksytty");
+                t_in = new trafficIn(sock);
                 t_in.start();
+                //uutta
+                t_out = new trafficOut(sock);
                 t_out.start();
-                System.out.println("tässä ollaan");
-                System.out.println(t_in.in());
+                Platform.runLater(()-> {
+                    shc.createBoard();
+                });
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+
+
 
     }
 
@@ -59,21 +71,41 @@ public class Server extends Thread{
 
         public trafficIn(Socket client) {
             this.ssock = client;
+            //this.run();
         }
 
         @Override
         public void run() {
-            //String vastaanotettu;
-            try {
-                in = new ObjectInputStream(ssock.getInputStream());
-                while(true) {
-                    vastaanotettu = in.readUTF();
+            String line;
 
-                    System.out.println(in);
+
+            try{
+
+                BufferedReader inp = new BufferedReader(new InputStreamReader(ssock.getInputStream()));
+
+
+            while(true){
+                //System.out.println("trafficIn kuuntelusilmukka");
+                try{
+                    System.out.println("yritetään lukea viestiä");
+                    line = inp.readLine();
+                    //if(line!=null)System.out.println(line);
+                    //line = inp.readLine();
+                    System.out.println(line);
+
+                }catch (IOException e){
+                    System.out.println("luku epäonnistui");
+                    ssock.close();
+                    break;
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
             }
+            }catch (IOException e){
+                System.out.println("pieleen meni " +e);
+            }
+
+
+
+
         }
     }
 
@@ -83,15 +115,17 @@ public class Server extends Thread{
 
     private class trafficOut extends Thread {
         private Socket csock;
-        private ObjectOutputStream out;
+        private DataOutputStream out;
 
         public trafficOut(Socket client) {
             this.csock = client;
+            //this.start();
         }
 
-        public void out(Serializable msg){
+        public void out(String msg){
             try {
-                out.writeObject(msg);
+                out.writeChars(msg +"\n");
+                out.flush();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -99,13 +133,9 @@ public class Server extends Thread{
 
         @Override
         public void run() {
-            System.out.println("valmiina lähettämään viestejä");
-            //PrintWriter out;
             try {
-                 out = new ObjectOutputStream(csock.getOutputStream());
-                 while(true){
+                 out = new DataOutputStream(csock.getOutputStream());
 
-                 }
 
             } catch (IOException e) {
                 e.printStackTrace();
