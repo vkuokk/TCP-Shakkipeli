@@ -42,8 +42,8 @@ public class Server extends Thread {
             while(true) {
 
                 Socket sock = s.accept();
-                System.out.println("soketti hyväksytty");
-                shc.setPuoli(puoli);
+                //System.out.println("soketti hyväksytty");
+                //shc.setPuoli(puoli);
                 shc.getFxChatfield().appendText("Pelaaja liittyi osoittesta "+ sock.getInetAddress().toString() + "\n");
                 t_in = new trafficIn(sock);
                 t_in.start();

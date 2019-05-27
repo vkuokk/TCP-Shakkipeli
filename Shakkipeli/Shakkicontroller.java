@@ -94,7 +94,9 @@ public class Shakkicontroller implements Initializable{
 
     public void aloitaPeli(String puoli){
         createBoard();
+        setPuoli(puoli);
         fxChatfield.appendText("Olet pelaaja: " + puoli + "\n");
+
     }
 
     public TextArea getFxChatfield(){
@@ -103,6 +105,8 @@ public class Shakkicontroller implements Initializable{
 
     public void setPuoli(String puoli){
         this.puoli = puoli;
+        if(puoli == "musta") palvelin.send("Olet valkoinen");
+        else palvelin.send("Olet musta");
     }
 
     public void appendText(String text){
