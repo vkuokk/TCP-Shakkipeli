@@ -30,6 +30,10 @@ public class Server extends Thread {
         t_out.out(message);
     }
 
+    public void sendBits(byte i){
+        t_out.bitsOut(i);
+    }
+
     @Override
     public void run() {
         try {
@@ -137,7 +141,16 @@ public class Server extends Thread {
         public void out(String msg){
             try {
                 out.writeChars(msg +"\n");
+
                 out.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        public void bitsOut(byte i){
+            try {
+                out.write(i);
             } catch (IOException e) {
                 e.printStackTrace();
             }

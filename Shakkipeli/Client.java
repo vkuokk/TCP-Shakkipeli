@@ -1,5 +1,7 @@
 package Shakkipeli;
 
+import javafx.application.Platform;
+
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -9,10 +11,12 @@ public class Client extends Thread {
     public InetAddress ia;
     public trafficIn t_in;
     public trafficOut t_out;
+    public Shakkicontroller shc;
 
-    public Client(InetAddress ina, int portti){
+    public Client(InetAddress ina, int portti, Shakkicontroller shc){
         this.ia = ina;
         this.port = portti;
+        this.shc = shc;
     }
 
     public void send(String message) {
@@ -53,9 +57,25 @@ public class Client extends Thread {
             try {
                 BufferedReader inp = new BufferedReader(new InputStreamReader(ssock.getInputStream()));
                 while(true) {
-
                     vastaanotettu = inp.readLine();
                     System.out.println(vastaanotettu);
+
+
+                    if(vastaanotettu.contains("Olet valkoinen")){
+                        Platform.runLater(()-> {
+                            shc.appendText("Liityit onnistuneesti peliin " + ssock.getInetAddress().toString() );
+                            shc.aloitaPeli("musta");
+                        });
+                    }
+                    if(vastaanotettu.equals("Olet musta")){
+                        Platform.runLater(()-> {
+                            shc.appendText("Liityit onnistuneesti peliin " + ssock.getInetAddress().toString() );
+                            shc.aloitaPeli("valkoinen");
+                        });
+                    }
+
+
+                    shc.appendText(vastaanotettu);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -74,12 +94,15 @@ public class Client extends Thread {
         public void out(String msg){
             try {
                 out.writeChars(msg + "\n");
+
                 out.flush();
 
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+
+
 
         @Override
         public void run() {

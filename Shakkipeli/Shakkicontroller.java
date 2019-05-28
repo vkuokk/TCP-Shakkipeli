@@ -24,6 +24,7 @@ public class Shakkicontroller implements Initializable{
     private Client asiakas;
     private boolean listenToClient = true;
 
+
     private String puoli;
     private String IPString;
     private String PortString;
@@ -46,10 +47,9 @@ public class Shakkicontroller implements Initializable{
         //createBoard();
 
         // Luo shakkinappulat
-        Game game = new Game(fxChessgrid);
 
         try {
-            asiakas = new Client(InetAddress.getByName(IPString), Integer.parseInt(PortString));
+            asiakas = new Client(InetAddress.getByName(IPString), Integer.parseInt(PortString), this);
             System.out.println(InetAddress.getByName(IPString));
             //client.start();
         } catch (UnknownHostException e) {
@@ -58,6 +58,7 @@ public class Shakkicontroller implements Initializable{
         asiakas.start();
     }
 
+    //tekstikenttään kirjoittaminen
     @FXML void handleChat(){
         String msg = fxChatbox.getText();
         System.out.println(msg);
@@ -79,7 +80,7 @@ public class Shakkicontroller implements Initializable{
 
         TextInputDialog f = new TextInputDialog("");
         f.setTitle("Shakkipeli");
-        f.setHeaderText("Kuunneltava portti, jonka avulla toinen pelaaja voi liittyä");
+        f.setHeaderText("Portti, jonka avulla toinen pelaaja voi liittyä");
         Optional<String> result = f.showAndWait();
 
         result.ifPresent(name -> {
@@ -96,6 +97,12 @@ public class Shakkicontroller implements Initializable{
         createBoard();
         setPuoli(puoli);
         fxChatfield.appendText("Olet pelaaja: " + puoli + "\n");
+        int ipuol = 0;
+        if(puoli.contains("musta")) ipuol = 0;
+        if(puoli.contains("valkoinen")) ipuol = 1;
+
+        game = new Game(fxChessgrid,ipuol);
+        game.spawn();
 
     }
 
@@ -105,8 +112,10 @@ public class Shakkicontroller implements Initializable{
 
     public void setPuoli(String puoli){
         this.puoli = puoli;
-        if(puoli == "musta") palvelin.send("Olet valkoinen");
-        else palvelin.send("Olet musta");
+        if(isServer) {
+            if (puoli == "musta") palvelin.send("Olet valkoinen");
+            else palvelin.send("Olet musta");
+        }
     }
 
     public void appendText(String text){
