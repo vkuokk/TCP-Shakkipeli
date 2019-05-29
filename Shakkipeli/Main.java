@@ -17,7 +17,7 @@ public class Main extends Application {
 
         Scene scene = new Scene(root, 800, 590);
         //Shakkicontroller shc = scene.getRoot();
-        //scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+        //scene.getStylesheets().add(getClass().getResource("Shakkicss.css").toExternalForm());
         //shc.load();
         primaryStage.setScene(scene);
 
