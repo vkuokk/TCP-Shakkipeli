@@ -48,6 +48,8 @@ public class Shakkicontroller implements Initializable{
 
         // Luo shakkinappulat
 
+
+
         try {
             asiakas = new Client(InetAddress.getByName(IPString), Integer.parseInt(PortString), this);
             System.out.println(InetAddress.getByName(IPString));
@@ -70,6 +72,13 @@ public class Shakkicontroller implements Initializable{
 
 
     public void alusta(){
+
+        //TESTAUSTA VARTEN
+        IPString = "127.0.0.1";
+        PortString = "57";
+        localPort = "57";
+
+
         fxIP.textProperty().addListener((observable, f, newIP) -> {
             IPString = newIP;
         });
@@ -78,14 +87,19 @@ public class Shakkicontroller implements Initializable{
             PortString = newPort;
         });
 
+        //TESTAUSTA VARTEN POISTETTU
+        /*
         TextInputDialog f = new TextInputDialog("");
         f.setTitle("Shakkipeli");
         f.setHeaderText("Portti, jonka avulla toinen pelaaja voi liittyä");
         Optional<String> result = f.showAndWait();
 
+
         result.ifPresent(name -> {
             localPort = name;
         });
+
+         */
 
         palvelin = new Server(Integer.parseInt(localPort), this);
         //Thread p = new Thread(palvelin);
