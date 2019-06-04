@@ -34,7 +34,6 @@ public class Game {
     private double oldX, oldY;
     private double newTranslateX;
     private double newTranslateY;
-    private final DataFormat buttonFormat = new DataFormat("MyButton");
 
     //puolet 0 = musta, 1 = valkoinen
     public Game(GridPane newChessBoard, int puoli) {
@@ -63,7 +62,7 @@ public class Game {
         Queen q = new Queen(sd, spaces, size);
         Bishop b = new Bishop(sd,spaces,size);
 
-        //currentpiece = q;
+        // currentpiece = q;
         //queen = q;
 
         cb.setGridLinesVisible(true);
@@ -72,18 +71,27 @@ public class Game {
         setPieceListener(q);
         setPieceListener(b);
 
+        for(int i = 0; i<8; i++){
+            for(int j = 0; j<8; j++){
+                Rectangle r = (Rectangle)cb.getChildren().get(i*8+j);
+                Bounds boun = r.getBoundsInParent();
+                double boofX = cb.parentToLocal(boun.getCenterX(),boun.getCenterY()).getX();
+                double boofY = cb.parentToLocal(boun.getCenterX(),boun.getCenterY()).getY();
+
+                System.out.println("bounds levelup " + boofX + " "+ boofY);
+                //r.setFill(Color.BLACK);
+                setListener(r);
+            }
+        }
 
         //cb.add(pane1, 1,1);
         //cb.add(pane2, 5, 5);
         cb.add(q, 0, 0);
-        cb.add(b, 0,1);
+        cb.add(b, 0,0);
+        //move(q, (Rectangle)cb.getChildren().get(2));
 
-        for(int i = 0; i<8; i++){
-            for(int j = 0; j<8; j++){
-                Rectangle r = (Rectangle)cb.getChildren().get(i*8+j);
-                setListener(r);
-            }
-        }
+
+
 
         //Rectangle r = (Rectangle)cb.getChildren().get(1*8+1);
         //setListener(r);
@@ -150,76 +158,6 @@ public class Game {
         });
 
 
-        //cb.addEventFilter(MouseEvent.ANY, e -> System.out.println( e));
-        //cb.addEventFilter(MouseDragEvent.ANY, e -> System.out.println( e));
-        //cb.addEventFilter(DragEvent.ANY, e-> System.out.println( e));
-        //queen.addEventFilter(MouseEvent.ANY, e-> System.out.println( e));
-
-        /*
-        queen.setOnMousePressed(e -> {
-            mouseX = e.getSceneX();
-            mouseY = e.getSceneY();
-            oldX = queen.getTranslateX();
-            oldY = queen.getTranslateY();
-
-            queen.setMouseTransparent(true);
-            e.consume();
-        });
-
-        queen.setOnMouseReleased(e -> {
-
-            //System.out.println("on drag dropped");
-            Double d = cb.getMinHeight();
-            //System.out.println("cb minheight: " + d);
-            double[] todrop = nearest(newTranslateX, newTranslateY, centerxy);
-            queen.setMouseTransparent(false);
-            e.consume();
-
-        });
-        queen.setOnDragDetected(e -> {
-
-            queen.startFullDrag();
-            System.out.println("drag detected");
-            queen.setMouseTransparent(true);
-
-            e.consume();
-
-        });
-        queen.setOnMouseDragged(e -> {
-            double offsetX = e.getSceneX() - mouseX;
-            double offsetY = e.getSceneY() - mouseY;
-
-            newTranslateX = oldX + offsetX;
-            newTranslateY = oldY + offsetY;
-            //System.out.println(newTranslateX + " " + newTranslateY);
-            queen.setMouseTransparent(true);
-
-            queen.setTranslateX(newTranslateX);
-            queen.setTranslateY(newTranslateY);
-            e.consume();
-
-        });
-
-        /*
-        queen.setOnMouseDragged(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent t) {
-                double offsetX = t.getSceneX() - mouseX;
-                double offsetY = t.getSceneY() - mouseY;
-
-                newTranslateX = oldX + offsetX;
-                newTranslateY = oldY + offsetY;
-                System.out.println(newTranslateX + " " + newTranslateY);
-
-                queen.setTranslateX(newTranslateX);
-                queen.setTranslateY(newTranslateY);
-                t.consume();
-
-            }
-        });
-
-         */
-
 
     }
 
@@ -236,10 +174,7 @@ public class Game {
 
         p.setOnMouseReleased(e -> {
 
-            //System.out.println("on drag dropped");
             Double d = cb.getMinHeight();
-            //System.out.println("cb minheight: " + d);
-            //double[] todrop = nearest(newTranslateX, newTranslateY, centerxy);
             p.setMouseTransparent(false);
             e.consume();
 
@@ -260,7 +195,6 @@ public class Game {
 
             newTranslateX = oldX + offsetX;
             newTranslateY = oldY + offsetY;
-            //System.out.println(newTranslateX + " " + newTranslateY);
             p.setMouseTransparent(true);
 
             p.setTranslateX(newTranslateX);
@@ -292,81 +226,39 @@ public class Game {
         return xy;
     }
 
-
+    //Asetetaan kuuntelijat kaikille gridpane(cb):ssa oleville neliöille
+    //ja hiiren ollessa sen kohdalla tiputetaan valittu nappula siihen
     public void setListener(Rectangle r) {
         r.setOnMouseDragOver(e -> {
             //System.out.println("hiiri laatikon yläpuolella");
         });
         r.setOnMouseDragReleased( e -> {
             System.out.println("mouse released above laatikko");
+
+            System.out.println(currentpiece.toString());
+            Point2D toParent = currentpiece.localToParent(currentpiece.getTranslateX(), currentpiece.getTranslateY());
+            double oofX = toParent.getX();
+            double oofY = toParent.getY();
+
+            //currentpiece.setTranslateX(r.getScene().getX());
+            //currentpiece.setTranslateY(r.getScene().getY());
+
+            //Oikea translate 0,0 ruudun suhteen:
             currentpiece.setTranslateX(r.localToParent(r.getX(),r.getY()).getX());
             currentpiece.setTranslateY(r.localToParent(r.getX(),r.getY()).getY());
+
+            System.out.println("uudet koordinaatit " + r.localToParent(r.getX(),r.getY()).getX() +"   " +r.localToParent(r.getX(),r.getY()).getY());
+
+
         });
     }
+
+    public void move(Piece p, Rectangle r ){
+
+        System.out.println("alustetaan");
+        p.setTranslateX(r.localToParent(r.getX(),r.getY()).getX());
+        p.setTranslateY(r.localToParent(r.getX(),r.getY()).getY());
+    }
 }
-/*
-//System.out.println("päästit irti");
-                //laudan korkeus ja leveys yhtäsuuret
-                double cb_h = cb.getHeight();
-                double space = cb_h/16;
 
-                        double[][] centerxy = new double[64][2];
-                        //Pair<Double, Double> pairs = new Pair(8,8);
-
-                        //nappulan jättäminen ruudun keskikohtaan
-                        //ruudukon ruutujen keskikohtien koordinaattien laskeminen
-                        int h = 0;
-                        for(int i = 1; i<16; i+=2){
-                            for(int j = 1; j<16; j+=2){
-
-                                centerxy[h][0] = i*space;
-                                centerxy[h][1] = j*space;
-                        h++;
-                    }
-                }
-
-                Bounds b = cb.getBoundsInLocal();
-                System.out.println("cb:n keskipiste: " + b.getCenterX() + " " +b.getCenterY());
-                System.out.println("cb:n minimi ja maksimi: " + b.getMinX() + " " + b.getMinY() + " "+ b.getMaxX() + " " + b.getMaxY());
-
-                Point2D board = cb.parentToLocal(mouseX,mouseY);
-                System.out.println(board.getX() + " " + board.getY());
-
-                Point2D local = queen.localToParent(board.getX(), board.getY());
-                double lx = local.getX();
-                double ly = local.getY();
-
-                //System.out.println("local: " + mouseX + " " + mouseY);
-                //System.out.println("queen.localtoparent: "+ locallocal.getX() + " " +locallocal.getY());
-                //System.out.println("cb.queen.localtoparent: " + lx + " " + ly);
-
-
-
-                //System.out.println("parent to local: " + lx + " " +ly);
-                //double[] n = nearest(mouseX, mouseY, centerxy);
-                double[] n = nearest(lx, ly, centerxy);
-
-
-
-                Point2D s = cb.parentToLocal(n[0], n[1]);
-                double xs = s.getX();
-                double ys = s.getY();
-
-                Point2D news = queen.parentToLocal(xs,ys);
-                double newx = news.getX();
-                double newy = news.getY();
-
-                //System.out.println("alkup: " + n[0] +" "+ n[1]);
-                //System.out.println("cb.parenttolocal: " + xs + " " + ys);
-                //System.out.println("queen.cb.parenttolocal: "  + newx + " " + newy);
-
-                //System.out.println("queen to local bounds width" + b.getWidth() + " " + b.getHeight());
-
-
-                //((Button)(t.getSource())).setTranslateX(newx);
-                //((Button)(t.getSource())).setTranslateY(newy);
-
-            }
-            });
- */
 
