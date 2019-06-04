@@ -6,6 +6,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -23,8 +24,9 @@ public class Game {
 
     private GridPane cb;
     private int sd;
-    @FXML
-    private Queen queen;
+    //@FXML
+    //private Queen queen;
+    private Piece currentpiece;
 
     int[][] spaces = new int[7][7];
     //
@@ -51,31 +53,51 @@ public class Game {
         Pane pane1 = new Pane();
         Pane pane2 = new Pane();
 
-        setListener(pane1);
+        //setListener(pane1);
         //setListener(pane2);
         pane1.setStyle("-fx-background-color: #FFF888;");
-        cb.add(pane1, 5, 5);
-        cb.add(pane2, 1,1);
+        pane2.setStyle("-fx-background-color: #FFF888;");
+        int size = cb.heightProperty().intValue() / 8;
 
 
+        Queen q = new Queen(sd, spaces, size);
+        Bishop b = new Bishop(sd,spaces,size);
+
+        //currentpiece = q;
+        //queen = q;
+
+        cb.setGridLinesVisible(true);
+        cb.getColumnConstraints().add(new ColumnConstraints(0));
+        cb.getRowConstraints().add(new RowConstraints(0));
+        setPieceListener(q);
+        setPieceListener(b);
+
+
+        //cb.add(pane1, 1,1);
+        //cb.add(pane2, 5, 5);
+        cb.add(q, 0, 0);
+        cb.add(b, 0,1);
+
+        for(int i = 0; i<8; i++){
+            for(int j = 0; j<8; j++){
+                Rectangle r = (Rectangle)cb.getChildren().get(i*8+j);
+                setListener(r);
+            }
+        }
+
+        //Rectangle r = (Rectangle)cb.getChildren().get(1*8+1);
+        //setListener(r);
 
         //#############################################
 
 
-        int size = cb.heightProperty().intValue() / 8;
 
-        Queen q = new Queen(sd, spaces, size);
-        queen = q;
-        cb.setGridLinesVisible(true);
-        cb.getColumnConstraints().add(new ColumnConstraints(0));
-        cb.getRowConstraints().add(new RowConstraints(0));
         //queen.setStyle("-fx-background-color: transparent ");
         //queen.setHeight(35);
         //queen.setWidth(35);
         //cb.add(queen,5,5);
 
-        pane2.getChildren().add(queen);
-        //cb.add(queen, 0, 0);
+        //pane2.getChildren().add(queen);
         //queen.setPrefWidth(size);
         //queen.setPrefHeight(size);
 
@@ -100,35 +122,66 @@ public class Game {
         }
 
 
+
+
+
+
+        cb.setOnMouseReleased(e -> {
+            //System.out.println("cb mouse released");
+        });
+
+        cb.setOnMouseDragReleased(e -> {
+            //e.getPickResult()
+            //System.out.println("dropped to pane");
+            //queen.setTranslateX(pane1.getTranslateX());
+            //queen.setTranslateY(pane1.getTranslateY());
+
+            //((Pane)dragged.getParent().getChildren().remove(dragged));
+
+
+        });
+
+        cb.setOnMouseDragOver(e -> {
+
+            //System.out.println("hiiri yläpuolella");
+
+            e.consume();
+
+        });
+
+
+        //cb.addEventFilter(MouseEvent.ANY, e -> System.out.println( e));
+        //cb.addEventFilter(MouseDragEvent.ANY, e -> System.out.println( e));
+        //cb.addEventFilter(DragEvent.ANY, e-> System.out.println( e));
+        //queen.addEventFilter(MouseEvent.ANY, e-> System.out.println( e));
+
+        /*
         queen.setOnMousePressed(e -> {
             mouseX = e.getSceneX();
             mouseY = e.getSceneY();
             oldX = queen.getTranslateX();
             oldY = queen.getTranslateY();
+
+            queen.setMouseTransparent(true);
             e.consume();
         });
 
         queen.setOnMouseReleased(e -> {
+
             //System.out.println("on drag dropped");
             Double d = cb.getMinHeight();
-            System.out.println("cb minheight: " + d);
+            //System.out.println("cb minheight: " + d);
             double[] todrop = nearest(newTranslateX, newTranslateY, centerxy);
-            //queen.setTranslateX(todrop[0]);
-            //queen.setTranslateY(todrop[1]);
             queen.setMouseTransparent(false);
-            pane2.getChildren().remove(queen);
+            e.consume();
 
         });
-
-
-
-
-        //pane.addEventFilter(MouseEvent.ANY, e -> System.out.println( e));
-        //queen.addEventFilter(MouseEvent.ANY, e-> System.out.println( e));
-
         queen.setOnDragDetected(e -> {
+
             queen.startFullDrag();
             System.out.println("drag detected");
+            queen.setMouseTransparent(true);
+
             e.consume();
 
         });
@@ -139,11 +192,12 @@ public class Game {
             newTranslateX = oldX + offsetX;
             newTranslateY = oldY + offsetY;
             //System.out.println(newTranslateX + " " + newTranslateY);
+            queen.setMouseTransparent(true);
 
             queen.setTranslateX(newTranslateX);
             queen.setTranslateY(newTranslateY);
-            queen.setMouseTransparent(true);
             e.consume();
+
         });
 
         /*
@@ -169,6 +223,53 @@ public class Game {
 
     }
 
+    public void setPieceListener(Piece p){
+        p.setOnMousePressed(e -> {
+            mouseX = e.getSceneX();
+            mouseY = e.getSceneY();
+            oldX = p.getTranslateX();
+            oldY = p.getTranslateY();
+
+            p.setMouseTransparent(true);
+            e.consume();
+        });
+
+        p.setOnMouseReleased(e -> {
+
+            //System.out.println("on drag dropped");
+            Double d = cb.getMinHeight();
+            //System.out.println("cb minheight: " + d);
+            //double[] todrop = nearest(newTranslateX, newTranslateY, centerxy);
+            p.setMouseTransparent(false);
+            e.consume();
+
+        });
+        p.setOnDragDetected(e -> {
+
+            p.startFullDrag();
+            currentpiece = p;
+            System.out.println("drag detected");
+            p.setMouseTransparent(true);
+
+            e.consume();
+
+        });
+        p.setOnMouseDragged(e -> {
+            double offsetX = e.getSceneX() - mouseX;
+            double offsetY = e.getSceneY() - mouseY;
+
+            newTranslateX = oldX + offsetX;
+            newTranslateY = oldY + offsetY;
+            //System.out.println(newTranslateX + " " + newTranslateY);
+            p.setMouseTransparent(true);
+
+            p.setTranslateX(newTranslateX);
+            p.setTranslateY(newTranslateY);
+            e.consume();
+
+        });
+    }
+
     //lasketaan taulukosta lähin koordinaattipari
     public double[] nearest(double x, double y, double[][] s) {
 
@@ -192,18 +293,14 @@ public class Game {
     }
 
 
-    public void setListener(Pane pane) {
-        pane.setOnMouseDragReleased(e -> {
-            System.out.println("dropped to pane");
-            //queen.setTranslateX(pane.getScene().getX());
-            //queen.setTranslateY(pane.getScene().getY());
-            Queen other = new Queen(sd, spaces, (int) pane.getWidth());
-            other.setPrefHeight(pane.getHeight());
-            other.setPrefWidth(pane.getWidth());
-            pane.getChildren().add(other);
-
-            queen.setMouseTransparent(false);
-            //pane.getChildren().add(queen);
+    public void setListener(Rectangle r) {
+        r.setOnMouseDragOver(e -> {
+            //System.out.println("hiiri laatikon yläpuolella");
+        });
+        r.setOnMouseDragReleased( e -> {
+            System.out.println("mouse released above laatikko");
+            currentpiece.setTranslateX(r.localToParent(r.getX(),r.getY()).getX());
+            currentpiece.setTranslateY(r.localToParent(r.getX(),r.getY()).getY());
         });
     }
 }
