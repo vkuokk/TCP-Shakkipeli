@@ -16,7 +16,13 @@ public class Queen extends Piece {
         setSide(side);
         setCoords(coords);
         setSize(size);
-        Image img = new Image(getClass().getResourceAsStream("assets/bq2.png"));
+        Image img;
+        if(side == 0) {
+            img = new Image(getClass().getResourceAsStream("assets/bq2.png"));
+        }
+        else{
+            img = new Image(getClass().getResourceAsStream("assets/wq.png"));
+        }
         setIv(img);
 
     }

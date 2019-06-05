@@ -7,7 +7,13 @@ public class King extends Piece {
         setSide(side);
         setCoords(coords);
         setSize(size);
-        Image img = new Image(getClass().getResourceAsStream("assets/bk.png"));
+        Image img;
+        if(side == 0) {
+            img = new Image(getClass().getResourceAsStream("assets/bk.png"));
+        }
+        else{
+            img = new Image(getClass().getResourceAsStream("assets/wk.png"));
+        }
         setIv(img);
 
     }

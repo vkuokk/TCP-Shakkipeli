@@ -7,7 +7,13 @@ public class Pawn extends Piece{
         setSide(side);
         setCoords(coords);
         setSize(size);
-        Image img = new Image(getClass().getResourceAsStream("assets/bp.png"));
+        Image img;
+        if(side == 0) {
+            img = new Image(getClass().getResourceAsStream("assets/bp.png"));
+        }
+        else{
+            img = new Image(getClass().getResourceAsStream("assets/wp.png"));
+        }
         setIv(img);
 
     }

@@ -7,7 +7,13 @@ public class Knight extends Piece {
         setSide(side);
         setCoords(coords);
         setSize(size);
-        Image img = new Image(getClass().getResourceAsStream("assets/bkn.png"));
+        Image img;
+        if(side == 0) {
+            img = new Image(getClass().getResourceAsStream("assets/bkn.png"));
+        }
+        else{
+            img = new Image(getClass().getResourceAsStream("assets/wkn.png"));
+        }
         setIv(img);
 
     }

@@ -8,7 +8,13 @@ public class Bishop extends Piece {
         setSide(side);
         setCoords(coords);
         setSize(size);
-        Image img = new Image(getClass().getResourceAsStream("assets/bb.png"));
+        Image img;
+        if(side == 0) {
+            img = new Image(getClass().getResourceAsStream("assets/bb.png"));
+        }
+        else{
+            img = new Image(getClass().getResourceAsStream("assets/wb.png"));
+        }
         setIv(img);
 
     }
