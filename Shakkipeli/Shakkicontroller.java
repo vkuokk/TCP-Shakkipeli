@@ -161,7 +161,11 @@ public class Shakkicontroller implements Initializable{
                 square.setFill(color);
                 //square.setStyle("-fx-background-color: "+BLACK+";");
 
+                GridPane.setConstraints(square, i,j);
+
+                //TOIMIVA
                 fxChessgrid.add(square, i, j);
+
                 square.widthProperty().bind(fxChessgrid.widthProperty().divide(8));
                 square.heightProperty().bind(fxChessgrid.heightProperty().divide(8));
             }

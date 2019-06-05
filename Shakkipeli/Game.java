@@ -1,24 +1,12 @@
 package Shakkipeli;
 
-import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.fxml.FXML;
+import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.input.*;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.stage.Stage;
-import javafx.util.Pair;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class Game {
 
@@ -47,116 +35,89 @@ public class Game {
     public void spawn() {
 
 
-        //############################################
-        //TESTATAAN JOS GRIDPANEEN LAITTAA PANEN JA SEN SISÄLLE NAPIN
-        Pane pane1 = new Pane();
-        Pane pane2 = new Pane();
 
-        //setListener(pane1);
-        //setListener(pane2);
-        pane1.setStyle("-fx-background-color: #FFF888;");
-        pane2.setStyle("-fx-background-color: #FFF888;");
         int size = cb.heightProperty().intValue() / 8;
 
 
         Queen q = new Queen(sd, spaces, size);
-        Bishop b = new Bishop(sd,spaces,size);
+        King k = new King(sd,spaces,size);
+        Bishop b1,b2;
+        Rook r1,r2;
+        Knight k1,k2;
+        Pawn p1,p2,p3,p4,p5,p6,p7,p8;
 
-        // currentpiece = q;
-        //queen = q;
+        Piece[] blackPieces = new Piece[16];
+
+        b1 = new Bishop(sd,spaces,size);
+        b2 = new Bishop(sd,spaces,size);
+        r1 = new Rook(sd,spaces,size);
+        r2 = new Rook(sd,spaces,size);
+        k1 = new Knight(sd,spaces,size);
+        k2 = new Knight(sd,spaces,size);
+
+        p1 = new Pawn(sd,spaces,size);
+        p2 = new Pawn(sd,spaces,size);
+        p3 = new Pawn(sd,spaces,size);
+        p4 = new Pawn(sd,spaces,size);
+        p5 = new Pawn(sd,spaces,size);
+        p6 = new Pawn(sd,spaces,size);
+        p7 = new Pawn(sd,spaces,size);
+        p8 = new Pawn(sd,spaces,size);
+
+        blackPieces[0] = r1;
+        blackPieces[1] = k1;
+        blackPieces[2] = b1;
+        blackPieces[3] = q;
+        blackPieces[4] = k;
+        blackPieces[5] = b2;
+        blackPieces[6] = k2;
+        blackPieces[7] = r2;
+        blackPieces[8] = p1;
+        blackPieces[9] = p2;
+        blackPieces[10] = p3;
+        blackPieces[11] = p4;
+        blackPieces[12] = p5;
+        blackPieces[13] = p6;
+        blackPieces[14] = p7;
+        blackPieces[15] = p8;
+
 
         cb.setGridLinesVisible(true);
         cb.getColumnConstraints().add(new ColumnConstraints(0));
         cb.getRowConstraints().add(new RowConstraints(0));
-        setPieceListener(q);
-        setPieceListener(b);
+        for(Piece i : blackPieces){
+            setPieceListener(i);
+        }
+
+
 
         for(int i = 0; i<8; i++){
             for(int j = 0; j<8; j++){
                 Rectangle r = (Rectangle)cb.getChildren().get(i*8+j);
-                Bounds boun = r.getBoundsInParent();
-                double boofX = cb.parentToLocal(boun.getCenterX(),boun.getCenterY()).getX();
-                double boofY = cb.parentToLocal(boun.getCenterX(),boun.getCenterY()).getY();
-
-                System.out.println("bounds levelup " + boofX + " "+ boofY);
+                //rct[i*j] = r;
                 //r.setFill(Color.BLACK);
                 setListener(r);
             }
+    }
+
+        for(Piece i : blackPieces){
+            cb.add(i,0,0);
         }
 
-        //cb.add(pane1, 1,1);
-        //cb.add(pane2, 5, 5);
-        cb.add(q, 0, 0);
-        cb.add(b, 0,0);
-        //move(q, (Rectangle)cb.getChildren().get(2));
+        //Runlater, jotta neliöiden rajat ovat asettuneet, ilman tätä ei jostain syystä toimi
+        Platform.runLater(()-> {
+            int n = 0;
+            for(int i = 0;i<2;i++){
+                for(int j = 0; j<8; j++) {
+                    move(blackPieces[n], getRectangle(i, j, cb));
 
+                    n++;
+                }
+            }
+        });
 
-
-
-        //Rectangle r = (Rectangle)cb.getChildren().get(1*8+1);
-        //setListener(r);
-
-        //#############################################
-
-
-
-        //queen.setStyle("-fx-background-color: transparent ");
-        //queen.setHeight(35);
-        //queen.setWidth(35);
-        //cb.add(queen,5,5);
-
-        //pane2.getChildren().add(queen);
-        //queen.setPrefWidth(size);
-        //queen.setPrefHeight(size);
-
-        //####################################
-        //laudan korkeus ja leveys yhtäsuuret
         double cb_h = cb.getHeight();
         double space = cb_h / 16;
-
-        double[][] centerxy = new double[64][2];
-        //Pair<Double, Double> pairs = new Pair(8,8);
-
-        //nappulan jättäminen ruudun keskikohtaan
-        //ruudukon ruutujen keskikohtien koordinaattien laskeminen
-        int h = 0;
-        for (int i = 1; i < 16; i += 2) {
-            for (int j = 1; j < 16; j += 2) {
-
-                centerxy[h][0] = i * space;
-                centerxy[h][1] = j * space;
-                h++;
-            }
-        }
-
-
-
-
-
-
-        cb.setOnMouseReleased(e -> {
-            //System.out.println("cb mouse released");
-        });
-
-        cb.setOnMouseDragReleased(e -> {
-            //e.getPickResult()
-            //System.out.println("dropped to pane");
-            //queen.setTranslateX(pane1.getTranslateX());
-            //queen.setTranslateY(pane1.getTranslateY());
-
-            //((Pane)dragged.getParent().getChildren().remove(dragged));
-
-
-        });
-
-        cb.setOnMouseDragOver(e -> {
-
-            //System.out.println("hiiri yläpuolella");
-
-            e.consume();
-
-        });
-
 
 
     }
@@ -204,27 +165,7 @@ public class Game {
         });
     }
 
-    //lasketaan taulukosta lähin koordinaattipari
-    public double[] nearest(double x, double y, double[][] s) {
 
-
-        double dist = 10000.;
-        double[] xy = new double[2];
-
-        for (int i = 0; i < 64; i++) {
-            double x1 = s[i][0];
-            double y1 = s[i][1];
-
-            double x1x = Math.abs(x1 - x);
-            double y1y = Math.abs(y1 - y);
-            if (Math.hypot(x1x, y1y) < dist) {
-                dist = Math.hypot(x1x, y1y);
-                xy[0] = x1;
-                xy[1] = y1;
-            }
-        }
-        return xy;
-    }
 
     //Asetetaan kuuntelijat kaikille gridpane(cb):ssa oleville neliöille
     //ja hiiren ollessa sen kohdalla tiputetaan valittu nappula siihen
@@ -256,8 +197,24 @@ public class Game {
     public void move(Piece p, Rectangle r ){
 
         System.out.println("alustetaan");
+
+        Bounds b = r.getBoundsInParent();
+        System.out.println(b);
+
         p.setTranslateX(r.localToParent(r.getX(),r.getY()).getX());
         p.setTranslateY(r.localToParent(r.getX(),r.getY()).getY());
+    }
+
+    public Rectangle getRectangle(int rivi, int sarake, GridPane gp){
+        Node nd = null;
+        ObservableList<Node> nds = gp.getChildren();
+        for(Node node : nds){
+            if(gp.getRowIndex(node) == rivi && gp.getColumnIndex(node) == sarake){
+                nd = node;
+                break;
+            }
+        }
+        return (Rectangle)nd;
     }
 }
 
