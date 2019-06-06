@@ -10,10 +10,11 @@ public class Bishop extends Piece {
         setSize(size);
         Image img;
         if(side == 0) {
-            img = new Image(getClass().getResourceAsStream("assets/bb.png"));
+            img = new Image(getClass().getResourceAsStream("assets/bb.png"),size,size,true,true);
         }
         else{
-            img = new Image(getClass().getResourceAsStream("assets/wb.png"));
+            img = new Image(getClass().getResourceAsStream("assets/wb.png"),size,size,true,true);
+
         }
         setIv(img);
 

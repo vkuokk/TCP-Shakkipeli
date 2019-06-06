@@ -9,10 +9,10 @@ public class Pawn extends Piece{
         setSize(size);
         Image img;
         if(side == 0) {
-            img = new Image(getClass().getResourceAsStream("assets/bp.png"));
+            img = new Image(getClass().getResourceAsStream("assets/bp.png"),size,size,true,true);
         }
         else{
-            img = new Image(getClass().getResourceAsStream("assets/wp.png"));
+            img = new Image(getClass().getResourceAsStream("assets/wp.png"),size,size,true,true);
         }
         setIv(img);
 

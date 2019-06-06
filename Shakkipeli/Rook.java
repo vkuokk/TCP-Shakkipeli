@@ -12,10 +12,10 @@ public class Rook extends Piece{
         setSize(size);
         Image img;
         if(side == 0) {
-            img = new Image(getClass().getResourceAsStream("assets/br.png"));
+            img = new Image(getClass().getResourceAsStream("assets/br.png"),size,size,true,true);
         }
         else{
-            img = new Image(getClass().getResourceAsStream("assets/wr.png"));
+            img = new Image(getClass().getResourceAsStream("assets/wr.png"),size,size,true,true);
         }
         setIv(img);
 

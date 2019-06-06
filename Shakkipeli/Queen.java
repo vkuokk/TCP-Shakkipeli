@@ -18,10 +18,10 @@ public class Queen extends Piece {
         setSize(size);
         Image img;
         if(side == 0) {
-            img = new Image(getClass().getResourceAsStream("assets/bq2.png"));
+            img = new Image(getClass().getResourceAsStream("assets/bq2.png"),size,size,true,true);
         }
         else{
-            img = new Image(getClass().getResourceAsStream("assets/wq.png"));
+            img = new Image(getClass().getResourceAsStream("assets/wq.png"),size,size,true,true);
         }
         setIv(img);
 

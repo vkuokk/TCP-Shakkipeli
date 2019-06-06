@@ -9,10 +9,10 @@ public class Knight extends Piece {
         setSize(size);
         Image img;
         if(side == 0) {
-            img = new Image(getClass().getResourceAsStream("assets/bkn.png"));
+            img = new Image(getClass().getResourceAsStream("assets/bkn.png"),size,size,true,true);
         }
         else{
-            img = new Image(getClass().getResourceAsStream("assets/wkn.png"));
+            img = new Image(getClass().getResourceAsStream("assets/wkn.png"),size,size,true,true);
         }
         setIv(img);
 

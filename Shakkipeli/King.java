@@ -9,10 +9,10 @@ public class King extends Piece {
         setSize(size);
         Image img;
         if(side == 0) {
-            img = new Image(getClass().getResourceAsStream("assets/bk.png"));
+            img = new Image(getClass().getResourceAsStream("assets/bk.png"),size,size,true,true);
         }
         else{
-            img = new Image(getClass().getResourceAsStream("assets/wk.png"));
+            img = new Image(getClass().getResourceAsStream("assets/wk.png"),size,size,true,true);
         }
         setIv(img);
 
