@@ -1,5 +1,6 @@
 package Shakkipeli;
 
+import javafx.application.Platform;
 import javafx.geometry.Point2D;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -140,8 +141,10 @@ public class Shakkicontroller implements Initializable{
     }
 
     public void appendText(String text){
-        if(puoli == "musta") fxChatfield.appendText("valkoinen: " + text + "\n");
-        else fxChatfield.appendText("musta: "+ text + "\n");
+        Platform.runLater(() -> {
+            if (puoli == "musta") fxChatfield.appendText("valkoinen: " + text + "\n");
+            else fxChatfield.appendText("musta: " + text + "\n");
+        });
     }
 
 
@@ -180,13 +183,9 @@ public class Shakkicontroller implements Initializable{
     }
 
     public void sendMove(Point2D tomove, Piece ps){
-        double yCoord = tomove.getY();
-        double xCoord = tomove.getX();
-        //Point2D fmove = new Point2D(yCoord,xCoord);
-        Point2D chessCenter = new Point2D(fxChessgrid.heightProperty().divide(2).get(), fxChessgrid.widthProperty().divide(2).get());
-        System.out.println(chessCenter);
-        xCoord = chessCenter.getX()-xCoord;
-        yCoord = chessCenter.getY()-yCoord;
+        double yCoord = fxChessgrid.heightProperty().get()-tomove.getY()-fxChessgrid.heightProperty().divide(8).get();
+        double xCoord = fxChessgrid.widthProperty().get()-tomove.getX()-fxChessgrid.widthProperty().divide(8).get();
+
 
         Point2D newCoord = new Point2D(xCoord,yCoord);
         palvelin.sendMove(newCoord, ps);
