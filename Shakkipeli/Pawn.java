@@ -3,7 +3,8 @@ package Shakkipeli;
 import javafx.scene.image.Image;
 
 public class Pawn extends Piece{
-    public Pawn(int side, int[][] coords, int size){
+    public Pawn(int side, int[][] coords, int size, String name){
+        setName(name);
         setSide(side);
         setCoords(coords);
         setSize(size);

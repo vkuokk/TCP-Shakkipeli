@@ -8,13 +8,18 @@ import javafx.scene.Node;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Rectangle;
 
+import java.util.ArrayList;
+
 public class Game {
 
     private GridPane cb;
     private int sd;
+    private boolean turn = false;
     //@FXML
     //private Queen queen;
     private Piece currentpiece;
+    private ArrayList<Piece> pieces = new ArrayList<>();
+    private Shakkicontroller shc;
 
     int[][] spaces = new int[7][7];
     //
@@ -24,10 +29,11 @@ public class Game {
     private double newTranslateY;
 
     //puolet 0 = musta, 1 = valkoinen
-    public Game(GridPane newChessBoard, int puoli) {
+    public Game(GridPane newChessBoard, int puoli, Shakkicontroller shc) {
 
         cb = newChessBoard;
         sd = puoli;
+        this.shc = shc;
 
     }
 
@@ -52,9 +58,11 @@ public class Game {
                 //r.setFill(Color.BLACK);
                 setListener(r);
             }
+
+
     }
 
-
+        turn = true;
 
         double cb_h = cb.getHeight();
         double space = cb_h / 16;
@@ -128,6 +136,12 @@ public class Game {
             currentpiece.setTranslateX(r.localToParent(r.getX(),r.getY()).getX());
             currentpiece.setTranslateY(r.localToParent(r.getX(),r.getY()).getY());
 
+            if(turn) {
+                Platform.runLater(() -> {
+                    shc.sendMove(r.localToParent(r.getX(), r.getY()), currentpiece);
+                });
+            }
+
             System.out.println("uudet koordinaatit " + r.localToParent(r.getX(),r.getY()).getX() +"   " +r.localToParent(r.getX(),r.getY()).getY());
 
 
@@ -143,6 +157,12 @@ public class Game {
 
         p.setTranslateX(r.localToParent(r.getX(),r.getY()).getX());
         p.setTranslateY(r.localToParent(r.getX(),r.getY()).getY());
+
+    }
+
+    public void moveOpponent(Piece p, double xCoord, double yCoord){
+        p.setTranslateX(xCoord);
+        p.setTranslateY(yCoord);
     }
 
     public Rectangle getRectangle(int rivi, int sarake, GridPane gp){
@@ -162,8 +182,9 @@ public class Game {
 
         //Mustat nappulat
         //(Yläpuolen nappulat)
-        Queen tq = new Queen(1-side, spaces, size);
-        King tk = new King(1-side,spaces,size);
+        String[] sides = {"b","w"};
+        Queen tq = new Queen(1-side, spaces, size, sides[1-side]+"q");
+        King tk = new King(1-side,spaces,size, sides[1-side]+"k");
         Bishop tb1,tb2;
         Rook tr1,tr2;
         Knight tk1,tk2;
@@ -171,21 +192,21 @@ public class Game {
 
         Piece[] topPieces = new Piece[16];
 
-        tb1 = new Bishop(1-side,spaces,size);
-        tb2 = new Bishop(1-side,spaces,size);
-        tr1 = new Rook(1-side,spaces,size);
-        tr2 = new Rook(1-side,spaces,size);
-        tk1 = new Knight(1-side,spaces,size);
-        tk2 = new Knight(1-side,spaces,size);
+        tb1 = new Bishop(1-side,spaces,size, sides[1-side]+"b1");
+        tb2 = new Bishop(1-side,spaces,size, sides[1-side]+"b2");
+        tr1 = new Rook(1-side,spaces,size, sides[1-side]+"r1");
+        tr2 = new Rook(1-side,spaces,size, sides[1-side]+"r2");
+        tk1 = new Knight(1-side,spaces,size, sides[1-side]+"k1");
+        tk2 = new Knight(1-side,spaces,size, sides[1-side]+"k2");
 
-        tp1 = new Pawn(1-side,spaces,size);
-        tp2 = new Pawn(1-side,spaces,size);
-        tp3 = new Pawn(1-side,spaces,size);
-        tp4 = new Pawn(1-side,spaces,size);
-        tp5 = new Pawn(1-side,spaces,size);
-        tp6 = new Pawn(1-side,spaces,size);
-        tp7 = new Pawn(1-side,spaces,size);
-        tp8 = new Pawn(1-side,spaces,size);
+        tp1 = new Pawn(1-side,spaces,size, sides[1-side]+"p1");
+        tp2 = new Pawn(1-side,spaces,size, sides[1-side]+"p2");
+        tp3 = new Pawn(1-side,spaces,size, sides[1-side]+"p3");
+        tp4 = new Pawn(1-side,spaces,size, sides[1-side]+"p4");
+        tp5 = new Pawn(1-side,spaces,size, sides[1-side]+"p5");
+        tp6 = new Pawn(1-side,spaces,size, sides[1-side]+"p6");
+        tp7 = new Pawn(1-side,spaces,size, sides[1-side]+"p7");
+        tp8 = new Pawn(1-side,spaces,size, sides[1-side]+"p8");
 
         topPieces[0] = tr1;
         topPieces[1] = tk1;
@@ -223,8 +244,8 @@ public class Game {
 
 
         //Alarivin nappulat
-        Queen bq = new Queen(side, spaces, size);
-        King bk = new King(side,spaces,size);
+        Queen bq = new Queen(side, spaces, size, sides[side]+"q");
+        King bk = new King(side,spaces,size, sides[side]+"k");
         Bishop bb1,bb2;
         Rook br1,br2;
         Knight bk1,bk2;
@@ -233,21 +254,21 @@ public class Game {
         Piece[] bottomPieces = new Piece[16];
 
 
-        bb1 = new Bishop(side,spaces,size);
-        bb2 = new Bishop(side,spaces,size);
-        br1 = new Rook(side,spaces,size);
-        br2 = new Rook(side,spaces,size);
-        bk1 = new Knight(side,spaces,size);
-        bk2 = new Knight(side,spaces,size);
+        bb1 = new Bishop(side,spaces,size, sides[side]+"b1");
+        bb2 = new Bishop(side,spaces,size, sides[side]+"b2");
+        br1 = new Rook(side,spaces,size, sides[side]+"r1");
+        br2 = new Rook(side,spaces,size, sides[side]+"r2");
+        bk1 = new Knight(side,spaces,size, sides[side]+"k1");
+        bk2 = new Knight(side,spaces,size, sides[side]+"k2");
 
-        bp1 = new Pawn(side,spaces,size);
-        bp2 = new Pawn(side,spaces,size);
-        bp3 = new Pawn(side,spaces,size);
-        bp4 = new Pawn(side,spaces,size);
-        bp5 = new Pawn(side,spaces,size);
-        bp6 = new Pawn(side,spaces,size);
-        bp7 = new Pawn(side,spaces,size);
-        bp8 = new Pawn(side,spaces,size);
+        bp1 = new Pawn(side,spaces,size, sides[side]+"p1");
+        bp2 = new Pawn(side,spaces,size, sides[side]+"p2");
+        bp3 = new Pawn(side,spaces,size, sides[side]+"p3");
+        bp4 = new Pawn(side,spaces,size, sides[side]+"p4");
+        bp5 = new Pawn(side,spaces,size, sides[side]+"p5");
+        bp6 = new Pawn(side,spaces,size, sides[side]+"p6");
+        bp7 = new Pawn(side,spaces,size, sides[side]+"p7");
+        bp8 = new Pawn(side,spaces,size, sides[side]+"p8");
 
         bottomPieces[0] = br1;
         bottomPieces[1] = bk1;
@@ -278,6 +299,8 @@ public class Game {
         for(int i =0; i<16; i++){
             setPieceListener(bottomPieces[i]);
             setPieceListener(topPieces[i]);
+            pieces.add(bottomPieces[i]);
+            pieces.add(topPieces[i]);
         }
 
         //Toimiva
@@ -316,6 +339,15 @@ public class Game {
                 }
             }
         });
+    }
+
+    //Haetaan nappula nimen perusteella, jotta voidaan siirtää oikeaa vastustajan nappulaa
+    public Piece getByName(String name){
+        Piece pc = null;
+        for(Piece p : pieces){
+            if(p.getName().equals(name)) pc = p;
+        }
+        return pc;
     }
 }
 

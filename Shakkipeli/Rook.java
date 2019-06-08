@@ -6,7 +6,8 @@ import java.util.HashMap;
 //luokka tornille, koordinaatit lukuparina
 
 public class Rook extends Piece{
-    public Rook(int side, int[][] coords, int size){
+    public Rook(int side, int[][] coords, int size, String name){
+        setName(name);
         setSide(side);
         setCoords(coords);
         setSize(size);

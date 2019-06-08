@@ -3,6 +3,7 @@ package Shakkipeli;
 
 import javafx.application.Platform;
 import javafx.beans.Observable;
+import javafx.geometry.Point2D;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -28,6 +29,14 @@ public class Server extends Thread {
 
     public void send(String message){
         t_out.out(message);
+    }
+
+    public void sendMove(Point2D point, Piece pc){
+        double toX = point.getX();
+        double toY = point.getY();
+        String pieceName = pc.getName();
+
+        t_out.out("@" +" "+toX +" " + toY + " " + " " + pieceName);
     }
 
     public void sendBits(byte i){
@@ -139,8 +148,11 @@ public class Server extends Thread {
         }
 
         public void out(String msg){
+
+
             try {
-                out.writeChars(msg +"\n");
+                //out.writeChars(msg +"\n");
+                out.writeUTF(msg + "\n");
 
                 out.flush();
             } catch (IOException e) {

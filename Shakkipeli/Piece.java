@@ -9,12 +9,16 @@ public class Piece extends Button {
     private int[][] coords;
     private int size;
     private ImageView iv;
+    private String name;
 
     public Piece(){
         this.setPickOnBounds(true);
         this.setStyle("-fx-background-color: transparent;");
     };
 
+    public void setName(String name){
+        this.name = name;
+    }
     public void setSide(int side) {
         this.side = side;
     }
@@ -33,6 +37,9 @@ public class Piece extends Button {
 
     }
 
+    public String getName(){
+        return this.name;
+    }
 
 
     public Piece(int side, int[][]coords , int size){

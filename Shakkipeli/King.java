@@ -3,7 +3,8 @@ package Shakkipeli;
 import javafx.scene.image.Image;
 
 public class King extends Piece {
-    public King(int side, int[][] coords, int size){
+    public King(int side, int[][] coords, int size, String name){
+        setName(name);
         setSide(side);
         setCoords(coords);
         setSize(size);

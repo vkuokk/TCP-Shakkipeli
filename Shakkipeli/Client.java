@@ -61,21 +61,25 @@ public class Client extends Thread {
                     System.out.println(vastaanotettu);
 
 
-                    if(vastaanotettu.contains("Olet valkoinen")){
+                    if(vastaanotettu.contains("//0")){
                         Platform.runLater(()-> {
                             shc.appendText("Liityit onnistuneesti peliin " + ssock.getInetAddress().toString() );
                             shc.aloitaPeli("musta");
                         });
                     }
-                    if(vastaanotettu.equals("Olet musta")){
+                    if(vastaanotettu.contains("//1")){
                         Platform.runLater(()-> {
                             shc.appendText("Liityit onnistuneesti peliin " + ssock.getInetAddress().toString() );
                             shc.aloitaPeli("valkoinen");
                         });
                     }
+                    if(vastaanotettu.contains("@")){
+                        shc.interpretMove(vastaanotettu);
+                    }
 
-
-                    shc.appendText(vastaanotettu);
+                    else {
+                        shc.appendText(vastaanotettu);
+                    }
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -93,7 +97,7 @@ public class Client extends Thread {
 
         public void out(String msg){
             try {
-                out.writeChars(msg + "\n");
+                out.writeUTF(msg + "\n");
 
                 out.flush();
 

@@ -12,7 +12,8 @@ import java.net.URISyntaxException;
 
 public class Queen extends Piece {
 
-    public Queen(int side, int[][] coords, int size){
+    public Queen(int side, int[][] coords, int size, String name){
+        setName(name);
         setSide(side);
         setCoords(coords);
         setSize(size);

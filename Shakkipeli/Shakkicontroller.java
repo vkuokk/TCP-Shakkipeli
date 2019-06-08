@@ -1,5 +1,6 @@
 package Shakkipeli;
 
+import javafx.geometry.Point2D;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -7,9 +8,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.net.*;
 import java.util.ResourceBundle;
 import java.util.Optional;
@@ -88,7 +86,7 @@ public class Shakkicontroller implements Initializable{
         });
 
         //TESTAUSTA VARTEN POISTETTU
-        /*
+/*
         TextInputDialog f = new TextInputDialog("");
         f.setTitle("Shakkipeli");
         f.setHeaderText("Portti, jonka avulla toinen pelaaja voi liittyä");
@@ -99,7 +97,9 @@ public class Shakkicontroller implements Initializable{
             localPort = name;
         });
 
-         */
+ */
+
+
 
         palvelin = new Server(Integer.parseInt(localPort), this);
         //Thread p = new Thread(palvelin);
@@ -115,7 +115,7 @@ public class Shakkicontroller implements Initializable{
         if(puoli.contains("musta")) ipuol = 0;
         if(puoli.contains("valkoinen")) ipuol = 1;
 
-        game = new Game(fxChessgrid,ipuol);
+        game = new Game(fxChessgrid,ipuol,this);
         game.spawn();
 
     }
@@ -126,9 +126,16 @@ public class Shakkicontroller implements Initializable{
 
     public void setPuoli(String puoli){
         this.puoli = puoli;
+        String testiteksti = "//0";
+        byte[] b = testiteksti.getBytes();
+
+        for(byte bi : b){
+            System.out.println(bi);
+        }
+
         if(isServer) {
-            if (puoli == "musta") palvelin.send("Olet valkoinen");
-            else palvelin.send("Olet musta");
+            if (puoli == "musta") palvelin.send("//1");
+            else palvelin.send("//0");
         }
     }
 
@@ -170,6 +177,31 @@ public class Shakkicontroller implements Initializable{
                 square.heightProperty().bind(fxChessgrid.heightProperty().divide(8));
             }
         }
+    }
+
+    public void sendMove(Point2D tomove, Piece ps){
+        double yCoord = tomove.getY();
+        double xCoord = tomove.getX();
+        //Point2D fmove = new Point2D(yCoord,xCoord);
+        Point2D chessCenter = new Point2D(fxChessgrid.heightProperty().divide(2).get(), fxChessgrid.widthProperty().divide(2).get());
+        System.out.println(chessCenter);
+        xCoord = chessCenter.getX()-xCoord;
+        yCoord = chessCenter.getY()-yCoord;
+
+        Point2D newCoord = new Point2D(xCoord,yCoord);
+        palvelin.sendMove(newCoord, ps);
+
+           //palvelin.sendMove(fmove, ps);
+
+    }
+
+    public void interpretMove(String move){
+        String[] split = move.split(" ");
+        String xCoord = split[1];
+        String yCoord = split[2];
+        String pcname = split[4];
+        System.out.println(xCoord + " " + yCoord + " " +pcname);
+        game.moveOpponent(game.getByName(pcname), Double.parseDouble(xCoord), Double.parseDouble(yCoord));
     }
 
     @Override

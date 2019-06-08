@@ -4,7 +4,8 @@ import javafx.scene.image.Image;
 
 public class Bishop extends Piece {
 
-    public Bishop(int side, int[][] coords, int size){
+    public Bishop(int side, int[][] coords, int size, String name){
+        setName(name);
         setSide(side);
         setCoords(coords);
         setSize(size);
