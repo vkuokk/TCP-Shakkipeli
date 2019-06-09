@@ -188,7 +188,8 @@ public class Shakkicontroller implements Initializable{
 
 
         Point2D newCoord = new Point2D(xCoord,yCoord);
-        palvelin.sendMove(newCoord, ps);
+        if(isServer)palvelin.sendMove(newCoord, ps);
+        if(!isServer)asiakas.sendMove(newCoord, ps);
 
            //palvelin.sendMove(fmove, ps);
 

@@ -112,6 +112,9 @@ public class Server extends Thread {
                 try{
                     System.out.println("yritetään lukea viestiä");
                     line = inp.readLine();
+                    if(line.contains("@")){
+                        shc.interpretMove(line);
+                    }
                     shc.appendText(line);
                     //shc.getFxChatfield().appendText(line + "\n");
                     //if(line!=null)System.out.println(line);

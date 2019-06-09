@@ -1,6 +1,7 @@
 package Shakkipeli;
 
 import javafx.application.Platform;
+import javafx.geometry.Point2D;
 
 import java.io.*;
 import java.net.InetAddress;
@@ -23,6 +24,13 @@ public class Client extends Thread {
 
             t_out.out(message);
 
+    }
+    public void sendMove(Point2D point, Piece pc){
+        double toX = point.getX();
+        double toY = point.getY();
+        String pieceName = pc.getName();
+
+        t_out.out("@" +" "+toX +" " + toY + " " + " " + pieceName);
     }
 
     @Override
