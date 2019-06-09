@@ -91,7 +91,9 @@ public class Game {
         p.setOnDragDetected(e -> {
 
             p.startFullDrag();
+            if(currentpiece !=null)currentpiece.removeHighlight();
             currentpiece = p;
+            currentpiece.toFront();
             System.out.println("drag detected");
             p.setMouseTransparent(true);
 
@@ -110,6 +112,17 @@ public class Game {
             p.setTranslateY(newTranslateY);
             e.consume();
 
+        });
+
+        p.setOnMouseDragReleased(e -> {
+            currentpiece.setTranslateX(p.getTranslateX());
+            currentpiece.setTranslateY(p.getTranslateY());
+            if(turn) {
+                Platform.runLater(() -> {
+                    shc.sendMove(new Point2D(p.getTranslateX(),p.getTranslateY()), currentpiece);
+                });
+            }
+           cb.getChildren().remove(p);
         });
     }
 
@@ -135,6 +148,7 @@ public class Game {
             //Oikea translate 0,0 ruudun suhteen:
             currentpiece.setTranslateX(r.localToParent(r.getX(),r.getY()).getX());
             currentpiece.setTranslateY(r.localToParent(r.getX(),r.getY()).getY());
+            currentpiece.setHighlight();
 
             if(turn) {
                 Platform.runLater(() -> {

@@ -115,7 +115,7 @@ public class Server extends Thread {
                     if(line.contains("@")){
                         shc.interpretMove(line);
                     }
-                    shc.appendText(line);
+                    else shc.appendText(line);
                     //shc.getFxChatfield().appendText(line + "\n");
                     //if(line!=null)System.out.println(line);
                     //line = inp.readLine();

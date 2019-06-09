@@ -15,7 +15,10 @@ public class King extends Piece {
         else{
             img = new Image(getClass().getResourceAsStream("assets/wk.png"),size,size,true,true);
         }
+
+
         setIv(img);
+
 
     }
 }

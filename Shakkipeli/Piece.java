@@ -33,6 +33,8 @@ public class Piece extends Button {
         iv.setFitHeight(size-5);
         iv.setFitWidth(size-15);
         iv.setPreserveRatio(true);
+        //iv.setStyle("-fx-effect: dropshadow(gaussian, #ea2a15, 2, 1.0, 0, 0);");
+        //iv.setStyle("-fx-border-color: #ea2a15");
         this.setGraphic(iv);
 
     }
@@ -46,5 +48,12 @@ public class Piece extends Button {
         this.side = side;
         this.coords = coords;
         this.setPickOnBounds(true);
+    }
+
+    public void removeHighlight(){
+        iv.setStyle(null);
+    }
+    public void setHighlight(){
+        iv.setStyle("-fx-effect: dropshadow(gaussian, #ea2a15, 2, 1.0, 0, 0);");
     }
 }
