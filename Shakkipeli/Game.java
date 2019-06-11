@@ -188,8 +188,6 @@ public class Game {
             }
             final int fX = X;
             final int fY = Y;
-            currentpiece.setX(fX);
-            currentpiece.setY(fY);
             System.out.println("tosend koord. " +fX + " " + fY);
             if(turn) {
                 Platform.runLater(() -> {
@@ -198,6 +196,8 @@ public class Game {
                 });
             }
 
+            currentpiece.setX(fX);
+            currentpiece.setY(fY);
             //System.out.println("uudet koordinaatit " + r.localToParent(r.getX(),r.getY()).getX() +"   " +r.localToParent(r.getX(),r.getY()).getY());
 
 
@@ -241,7 +241,7 @@ public class Game {
         Rectangle rec = rcts[yCoord][xCoord];
         p.setTranslateX(rec.localToParent(rec.getX(),rec.getY()).getX());
         p.setTranslateY(rec.localToParent(rec.getX(),rec.getY()).getY());
-        lastMoved.removeHighlight();
+        if(lastMoved != null)lastMoved.removeHighlight();
         lastMoved = p;
         lastMoved.setHighlight();
 
@@ -250,7 +250,7 @@ public class Game {
 
         //System.out.println(xCoord +" "+ yCoord);
         for(Piece pi : pieces){
-            if(pi.getX() == xCoord && pi.getY() == yCoord ){
+            if(pi.getX() == xCoord && pi.getY() == yCoord && p != pi){
                 Platform.runLater(() -> {
                     cb.getChildren().remove(pi);
                 });
