@@ -122,6 +122,7 @@ public class Game {
                     shc.sendMove(new Point2D(p.getTranslateX(),p.getTranslateY()), currentpiece);
                 });
             }
+            currentpiece.setHighlight();
            cb.getChildren().remove(p);
         });
     }
