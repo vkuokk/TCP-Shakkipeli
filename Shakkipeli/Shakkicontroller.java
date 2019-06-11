@@ -184,8 +184,9 @@ public class Shakkicontroller implements Initializable{
 
 
     public void sendMove(int xcoord, int ycoord, Piece ps){
-        int mY = 7-xcoord;
-        int mX = 7-ycoord;
+        int mX = 7-xcoord;
+        int mY = 7-ycoord;
+        System.out.println("lähetettävät koordinaatit: " + mX + " " +mY);
 
 
         if(isServer)palvelin.sendMove(mX, mY, ps);

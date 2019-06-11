@@ -187,6 +187,7 @@ public class Game {
             }
             final int fX = X;
             final int fY = Y;
+            System.out.println("tosend koord. " +fX + " " + fY);
             if(turn) {
                 Platform.runLater(() -> {
                     //shc.sendMove(r.localToParent(r.getX(), r.getY()), currentpiece);
@@ -194,7 +195,7 @@ public class Game {
                 });
             }
 
-            System.out.println("uudet koordinaatit " + r.localToParent(r.getX(),r.getY()).getX() +"   " +r.localToParent(r.getX(),r.getY()).getY());
+            //System.out.println("uudet koordinaatit " + r.localToParent(r.getX(),r.getY()).getX() +"   " +r.localToParent(r.getX(),r.getY()).getY());
 
 
         });
@@ -234,7 +235,7 @@ public class Game {
         p.setTranslateX(xCoord);
         p.setTranslateY(yCoord);
          */
-        Rectangle rec = rcts[xCoord][yCoord];
+        Rectangle rec = rcts[yCoord][xCoord];
         p.setTranslateX(rec.localToParent(rec.getX(),rec.getY()).getX());
         p.setTranslateY(rec.localToParent(rec.getX(),rec.getY()).getY());
 
@@ -246,7 +247,7 @@ public class Game {
 
         //System.out.println(xCoord +" "+ yCoord);
         for(Piece pi : pieces){
-            System.out.println("nappuloiden x ja y koordinaatit " + pi.getTranslateX() + " " +pi.getTranslateY());
+            //System.out.println("nappuloiden x ja y koordinaatit " + pi.getTranslateX() + " " +pi.getTranslateY());
             if(pi.getX() == xCoord && pi.getY() == yCoord ){
                 Platform.runLater(() -> {
                     cb.getChildren().remove(pi);
