@@ -20,6 +20,7 @@ public class Game {
     //@FXML
     //private Queen queen;
     private Piece currentpiece;
+    private Piece opponentLastMoved;
     private ArrayList<Piece> pieces = new ArrayList<>();
     private ArrayList<Rectangle> rectangles = new ArrayList<>();
     private Shakkicontroller shc;
@@ -98,6 +99,7 @@ public class Game {
             p.startFullDrag();
             if(currentpiece !=null)currentpiece.removeHighlight();
             currentpiece = p;
+            opponentLastMoved = null;
             currentpiece.toFront();
             System.out.println("drag detected");
             p.setMouseTransparent(true);
@@ -186,8 +188,8 @@ public class Game {
     public void moveOpponent(Piece p, double xCoord, double yCoord){
         p.setTranslateX(xCoord);
         p.setTranslateY(yCoord);
-        //currentpiece = p;
-        //currentpiece.setHighlight();
+        opponentLastMoved = p;
+        opponentLastMoved.setHighlight();
         p.setHighlight();
 
         Rectangle r = getRbyC(xCoord,yCoord);
