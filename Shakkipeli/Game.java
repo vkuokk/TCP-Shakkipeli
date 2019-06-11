@@ -20,7 +20,7 @@ public class Game {
     //@FXML
     //private Queen queen;
     private Piece currentpiece;
-    private Piece opponentLastMoved;
+    private Piece lastMoved;
     private ArrayList<Piece> pieces = new ArrayList<>();
     //private ArrayList<Rectangle> rectangles = new ArrayList<>();
     private Shakkicontroller shc;
@@ -100,9 +100,9 @@ public class Game {
         p.setOnDragDetected(e -> {
 
             p.startFullDrag();
-            if(currentpiece !=null)currentpiece.removeHighlight();
+            if(lastMoved !=null)lastMoved.removeHighlight();
             currentpiece = p;
-            if(opponentLastMoved != null)opponentLastMoved.removeHighlight();
+            lastMoved = p;
             currentpiece.toFront();
             System.out.println("drag detected");
             p.setMouseTransparent(true);
@@ -127,6 +127,7 @@ public class Game {
         p.setOnMouseDragReleased(e -> {
             currentpiece.setTranslateX(p.getTranslateX());
             currentpiece.setTranslateY(p.getTranslateY());
+            lastMoved = currentpiece;
             if(turn) {
                 Platform.runLater(() -> {
                     Rectangle r = getRbyC(p.getTranslateX(),p.getTranslateY());
@@ -146,7 +147,7 @@ public class Game {
                     //shc.sendMove(new Point2D(p.getTranslateX(),p.getTranslateY()), currentpiece);
                 });
             }
-            currentpiece.setHighlight();
+            lastMoved.setHighlight();
            cb.getChildren().remove(p);
         });
     }
@@ -173,7 +174,7 @@ public class Game {
             //Oikea translate 0,0 ruudun suhteen:
             currentpiece.setTranslateX(r.localToParent(r.getX(),r.getY()).getX());
             currentpiece.setTranslateY(r.localToParent(r.getX(),r.getY()).getY());
-            currentpiece.setHighlight();
+            lastMoved.setHighlight();
 
             int X = 0;
             int Y = 0;
@@ -187,6 +188,8 @@ public class Game {
             }
             final int fX = X;
             final int fY = Y;
+            currentpiece.setX(fX);
+            currentpiece.setY(fY);
             System.out.println("tosend koord. " +fX + " " + fY);
             if(turn) {
                 Platform.runLater(() -> {
@@ -238,22 +241,23 @@ public class Game {
         Rectangle rec = rcts[yCoord][xCoord];
         p.setTranslateX(rec.localToParent(rec.getX(),rec.getY()).getX());
         p.setTranslateY(rec.localToParent(rec.getX(),rec.getY()).getY());
-
-        opponentLastMoved = p;
-        opponentLastMoved.setHighlight();
+        lastMoved.removeHighlight();
+        lastMoved = p;
+        lastMoved.setHighlight();
 
         //if(rec.localToParent(rec.getX(),rec.getY()).getX() == xCoord)
-
+        System.out.println("vastustajan lähettämät k. " + xCoord + " " +yCoord);
 
         //System.out.println(xCoord +" "+ yCoord);
         for(Piece pi : pieces){
-            //System.out.println("nappuloiden x ja y koordinaatit " + pi.getTranslateX() + " " +pi.getTranslateY());
             if(pi.getX() == xCoord && pi.getY() == yCoord ){
                 Platform.runLater(() -> {
                     cb.getChildren().remove(pi);
                 });
             }
         }
+        p.setX(xCoord);
+        p.setY(yCoord);
 
     }
 
