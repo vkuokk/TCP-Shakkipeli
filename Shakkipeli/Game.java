@@ -1,6 +1,7 @@
 package Shakkipeli;
 
 import javafx.application.Platform;
+import javafx.beans.Observable;
 import javafx.collections.ObservableList;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
@@ -8,6 +9,7 @@ import javafx.scene.Node;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Rectangle;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class Game {
@@ -19,6 +21,7 @@ public class Game {
     //private Queen queen;
     private Piece currentpiece;
     private ArrayList<Piece> pieces = new ArrayList<>();
+    private ArrayList<Rectangle> rectangles = new ArrayList<>();
     private Shakkicontroller shc;
 
     int[][] spaces = new int[7][7];
@@ -56,7 +59,9 @@ public class Game {
                 Rectangle r = (Rectangle)cb.getChildren().get(i*8+j);
                 //rct[i*j] = r;
                 //r.setFill(Color.BLACK);
+                rectangles.add(r);
                 setListener(r);
+
             }
 
 
@@ -163,6 +168,7 @@ public class Game {
         });
     }
 
+    //Alustetaan nappulat oikeille paikoilleen
     public void move(Piece p, Rectangle r ){
 
         //System.out.println("alustetaan");
@@ -173,11 +179,24 @@ public class Game {
         p.setTranslateX(r.localToParent(r.getX(),r.getY()).getX());
         p.setTranslateY(r.localToParent(r.getX(),r.getY()).getY());
 
+
     }
 
+    //Vastustajan tekemän liikkeen siirto
     public void moveOpponent(Piece p, double xCoord, double yCoord){
         p.setTranslateX(xCoord);
         p.setTranslateY(yCoord);
+        //currentpiece = p;
+        //currentpiece.setHighlight();
+        p.setHighlight();
+
+        Rectangle r = getRbyC(xCoord,yCoord);
+        for(Piece pi : pieces){
+            if(pi.getTranslateX() == xCoord && pi.getTranslateY() == yCoord){
+                cb.getChildren().remove(pi);
+            }
+        }
+
     }
 
     public Rectangle getRectangle(int rivi, int sarake, GridPane gp){
@@ -363,6 +382,17 @@ public class Game {
             if(p.getName().equals(name)) pc = p;
         }
         return pc;
+    }
+
+    //Haetaan oikea neliö koordinaattien perusteella
+    public Rectangle getRbyC(double x, double y){
+        Rectangle re = null;
+        for(Rectangle r : rectangles){
+            if(r.localToParent(r.getX(),r.getY()).getX() == x && r.localToParent(r.getX(),r.getY()).getY() == y){
+                re = r;
+            }
+        }
+        return re;
     }
 }
 
