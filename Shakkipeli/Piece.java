@@ -71,5 +71,9 @@ public class Piece extends Button {
     public int getY(){
         return this.Y;
     }
+
+    public boolean validate(int X , int Y){
+        return true;
+    }
 }
 

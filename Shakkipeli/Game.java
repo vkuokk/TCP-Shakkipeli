@@ -14,6 +14,8 @@ import java.util.ArrayList;
 
 public class Game {
 
+    private double moveStartx;
+    private double moveStarty;
     private GridPane cb;
     private int sd;
     private boolean turn = false;
@@ -81,12 +83,17 @@ public class Game {
 
     public void setPieceListener(Piece p){
         p.setOnMousePressed(e -> {
+            moveStartx = p.getTranslateX();
+            moveStarty = p.getTranslateY();
+
             mouseX = e.getSceneX();
             mouseY = e.getSceneY();
             oldX = p.getTranslateX();
             oldY = p.getTranslateY();
 
             p.setMouseTransparent(true);
+
+            
             e.consume();
         });
 
@@ -161,20 +168,8 @@ public class Game {
             //System.out.println("hiiri laatikon yläpuolella");
         });
         r.setOnMouseDragReleased( e -> {
-            System.out.println("mouse released above laatikko");
-
-            System.out.println(currentpiece.toString());
-            Point2D toParent = currentpiece.localToParent(currentpiece.getTranslateX(), currentpiece.getTranslateY());
-            double oofX = toParent.getX();
-            double oofY = toParent.getY();
-
-            //currentpiece.setTranslateX(r.getScene().getX());
-            //currentpiece.setTranslateY(r.getScene().getY());
-
             //Oikea translate 0,0 ruudun suhteen:
-            currentpiece.setTranslateX(r.localToParent(r.getX(),r.getY()).getX());
-            currentpiece.setTranslateY(r.localToParent(r.getX(),r.getY()).getY());
-            lastMoved.setHighlight();
+
 
             int X = 0;
             int Y = 0;
@@ -189,15 +184,23 @@ public class Game {
             final int fX = X;
             final int fY = Y;
             System.out.println("tosend koord. " +fX + " " + fY);
-            if(turn) {
+            if(turn && currentpiece.validate(fX,fY)) {
+
+                lastMoved.setHighlight();
                 Platform.runLater(() -> {
                     //shc.sendMove(r.localToParent(r.getX(), r.getY()), currentpiece);
-                    shc.sendMove(fX,fY,currentpiece);
+                    shc.sendMove(fX, fY, currentpiece);
                 });
-            }
 
-            currentpiece.setX(fX);
-            currentpiece.setY(fY);
+                currentpiece.setTranslateX(r.localToParent(r.getX(), r.getY()).getX());
+                currentpiece.setTranslateY(r.localToParent(r.getX(), r.getY()).getY());
+                currentpiece.setX(fX);
+                currentpiece.setY(fY);
+            }
+            else{
+                currentpiece.setTranslateX(moveStartx);
+                currentpiece.setTranslateY(moveStarty);
+            }
             //System.out.println("uudet koordinaatit " + r.localToParent(r.getX(),r.getY()).getX() +"   " +r.localToParent(r.getX(),r.getY()).getY());
 
 
