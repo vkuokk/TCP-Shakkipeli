@@ -14,7 +14,8 @@ public class Piece extends Button {
     public Piece(){
         this.setPickOnBounds(true);
         this.setStyle("-fx-background-color: transparent;");
-    };
+        //this.setStyle("-fx-background-color: BLUE;");
+    }
 
     public void setName(String name){
         this.name = name;

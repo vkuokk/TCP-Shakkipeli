@@ -25,6 +25,11 @@ public class Client extends Thread {
             t_out.out(message);
 
     }
+    public void sendMove(int x, int y, Piece pc){
+        String pieceName = pc.getName();
+        t_out.out("@" + " " +x +" "+ y+" "+pieceName);
+    }
+    /*
     public void sendMove(Point2D point, Piece pc){
         double toX = point.getX();
         double toY = point.getY();
@@ -32,6 +37,8 @@ public class Client extends Thread {
 
         t_out.out("@" +" "+toX +" " + toY + " " + " " + pieceName);
     }
+
+     */
 
     @Override
     public void run() {

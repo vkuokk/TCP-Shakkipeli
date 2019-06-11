@@ -22,10 +22,11 @@ public class Game {
     private Piece currentpiece;
     private Piece opponentLastMoved;
     private ArrayList<Piece> pieces = new ArrayList<>();
-    private ArrayList<Rectangle> rectangles = new ArrayList<>();
+    //private ArrayList<Rectangle> rectangles = new ArrayList<>();
     private Shakkicontroller shc;
 
-    int[][] spaces = new int[7][7];
+    int[][] spaces = new int[8][8];
+    Rectangle[][] rcts = new Rectangle[8][8];
     //
     private double mouseX, mouseY;
     private double oldX, oldY;
@@ -52,6 +53,8 @@ public class Game {
         cb.getRowConstraints().add(new RowConstraints(0));
 
 
+
+
         //Lisätään nappulat pelilaudalle puolen mukaan 0 = musta, 1 = valkoinen
         spawnPieces(sd ,size);
 
@@ -60,7 +63,7 @@ public class Game {
                 Rectangle r = (Rectangle)cb.getChildren().get(i*8+j);
                 //rct[i*j] = r;
                 //r.setFill(Color.BLACK);
-                rectangles.add(r);
+                //rectangles.add(r);
                 setListener(r);
 
             }
@@ -99,7 +102,7 @@ public class Game {
             p.startFullDrag();
             if(currentpiece !=null)currentpiece.removeHighlight();
             currentpiece = p;
-            opponentLastMoved = null;
+            if(opponentLastMoved != null)opponentLastMoved.removeHighlight();
             currentpiece.toFront();
             System.out.println("drag detected");
             p.setMouseTransparent(true);
@@ -126,7 +129,21 @@ public class Game {
             currentpiece.setTranslateY(p.getTranslateY());
             if(turn) {
                 Platform.runLater(() -> {
-                    shc.sendMove(new Point2D(p.getTranslateX(),p.getTranslateY()), currentpiece);
+                    Rectangle r = getRbyC(p.getTranslateX(),p.getTranslateY());
+                    int X = 0;
+                    int Y = 0;
+                    for(int i = 0; i<8;i++){
+                        for(int j = 0; j<8;j++){
+                            if(rcts[i][j] == r){
+                                X = j;
+                                Y = i;
+                            }
+                        }
+                    }
+                    final int fX = X;
+                    final int fY = Y;
+                    shc.sendMove(fX,fY,currentpiece);
+                    //shc.sendMove(new Point2D(p.getTranslateX(),p.getTranslateY()), currentpiece);
                 });
             }
             currentpiece.setHighlight();
@@ -158,9 +175,22 @@ public class Game {
             currentpiece.setTranslateY(r.localToParent(r.getX(),r.getY()).getY());
             currentpiece.setHighlight();
 
+            int X = 0;
+            int Y = 0;
+            for(int i = 0; i<8;i++){
+                for(int j = 0; j<8;j++){
+                    if(rcts[i][j] == r){
+                        X = j;
+                        Y = i;
+                    }
+                }
+            }
+            final int fX = X;
+            final int fY = Y;
             if(turn) {
                 Platform.runLater(() -> {
-                    shc.sendMove(r.localToParent(r.getX(), r.getY()), currentpiece);
+                    //shc.sendMove(r.localToParent(r.getX(), r.getY()), currentpiece);
+                    shc.sendMove(fX,fY,currentpiece);
                 });
             }
 
@@ -182,20 +212,30 @@ public class Game {
         p.setTranslateY(r.localToParent(r.getX(),r.getY()).getY());
 
 
+
     }
 
     //Vastustajan tekemän liikkeen siirto
-    public void moveOpponent(Piece p, double xCoord, double yCoord){
+    public void moveOpponent(Piece p, int xCoord, int yCoord){
+        /*
         p.setTranslateX(xCoord);
         p.setTranslateY(yCoord);
+         */
+        Rectangle rec = rcts[xCoord][yCoord];
+        p.setTranslateX(rec.localToParent(rec.getX(),rec.getY()).getX());
+        p.setTranslateY(rec.localToParent(rec.getX(),rec.getY()).getY());
+
         opponentLastMoved = p;
         opponentLastMoved.setHighlight();
-        p.setHighlight();
 
-        Rectangle r = getRbyC(xCoord,yCoord);
+
+        //System.out.println(xCoord +" "+ yCoord);
         for(Piece pi : pieces){
-            if(pi.getTranslateX() == xCoord && pi.getTranslateY() == yCoord){
-                cb.getChildren().remove(pi);
+            //System.out.println("nappuloiden x ja y koordinaatit " + pi.getTranslateX() + " " +pi.getTranslateY());
+            if(pi.getTranslateX() == xCoord && pi.getTranslateY() == yCoord && pi != p){
+                Platform.runLater(() -> {
+                    cb.getChildren().remove(pi);
+                });
             }
         }
 
@@ -335,8 +375,7 @@ public class Game {
         for(int i =0; i<16; i++){
             setPieceListener(bottomPieces[i]);
             setPieceListener(topPieces[i]);
-            pieces.add(bottomPieces[i]);
-            pieces.add(topPieces[i]);
+
         }
 
         //Toimiva
@@ -358,6 +397,21 @@ public class Game {
 
         //Runlater, jotta neliöiden rajat ovat asettuneet, ilman tätä ei jostain syystä toimi
         Platform.runLater(()-> {
+
+            //testataan milloin neliöt saadaan alustettua taulukkoon
+            //#################
+            for(int i = 0; i<8; i++){
+                for(int j = 0; j<8; j++){
+                    Rectangle r = getRectangle(i,j,cb);
+                    rcts[i][j] = r;
+                    //System.out.println(r.localToParent(r.getX(), r.getY()).getX());
+                    //System.out.println(r.localToParent(r.getX(), r.getY()).getY());
+                }
+            }
+            //#################
+
+
+
             int n = 0;
             for(int i = 0;i<2;i++){
                 for(int j = 0; j<8; j++) {
@@ -375,6 +429,10 @@ public class Game {
                 }
             }
         });
+        for(int i = 0; i<16;i++){
+            pieces.add(bottomPieces[i]);
+            pieces.add(topPieces[i]);
+        }
     }
 
     //Haetaan nappula nimen perusteella, jotta voidaan siirtää oikeaa vastustajan nappulaa
@@ -386,16 +444,24 @@ public class Game {
         return pc;
     }
 
+
     //Haetaan oikea neliö koordinaattien perusteella
     public Rectangle getRbyC(double x, double y){
         Rectangle re = null;
-        for(Rectangle r : rectangles){
-            if(r.localToParent(r.getX(),r.getY()).getX() == x && r.localToParent(r.getX(),r.getY()).getY() == y){
-                re = r;
+        for(int i = 0; i<8; i++){
+            for(int j = 0; j<8; j++) {
+                Rectangle r = rcts[i][j];
+
+                if (r.localToParent(r.getX(), r.getY()).getX() == x && r.localToParent(r.getX(), r.getY()).getY() == y) {
+                    re = rcts[i][j];
+                }
             }
         }
+
         return re;
     }
+
+
 }
 
 

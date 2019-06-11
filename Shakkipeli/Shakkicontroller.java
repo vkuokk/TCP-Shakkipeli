@@ -182,9 +182,20 @@ public class Shakkicontroller implements Initializable{
         }
     }
 
+
+    public void sendMove(int xcoord, int ycoord, Piece ps){
+        int mY = 7-xcoord;
+        int mX = 7-ycoord;
+
+
+        if(isServer)palvelin.sendMove(mX, mY, ps);
+        if(!isServer)asiakas.sendMove(mX, mY, ps);
+
+    }
+/*
     public void sendMove(Point2D tomove, Piece ps){
-        double yCoord = fxChessgrid.heightProperty().get()-tomove.getY()-fxChessgrid.heightProperty().divide(8).get();
-        double xCoord = fxChessgrid.widthProperty().get()-tomove.getX()-fxChessgrid.widthProperty().divide(8).get();
+        double yCoord = fxChessgrid.heightProperty().get()-tomove.getY()-2.625-fxChessgrid.heightProperty().divide(8).get();
+        double xCoord = fxChessgrid.widthProperty().get()-tomove.getX()-2.625-fxChessgrid.widthProperty().divide(8).get();
 
 
         Point2D newCoord = new Point2D(xCoord,yCoord);
@@ -194,14 +205,16 @@ public class Shakkicontroller implements Initializable{
            //palvelin.sendMove(fmove, ps);
 
     }
+    */
 
     public void interpretMove(String move){
         String[] split = move.split(" ");
         String xCoord = split[1];
         String yCoord = split[2];
-        String pcname = split[4];
-        System.out.println(xCoord + " " + yCoord + " " +pcname);
-        game.moveOpponent(game.getByName(pcname), Double.parseDouble(xCoord), Double.parseDouble(yCoord));
+        String pcname = split[3];
+        //System.out.println(xCoord + " " + yCoord + " " +pcname);
+        //game.moveOpponent(game.getByName(pcname), Double.parseDouble(xCoord), Double.parseDouble(yCoord));
+        game.moveOpponent(game.getByName(pcname), Integer.parseInt(xCoord), Integer.parseInt(yCoord));
     }
 
     @Override
