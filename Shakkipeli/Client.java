@@ -92,7 +92,7 @@ public class Client extends Thread {
                         shc.interpretMove(vastaanotettu);
                     }
 
-                    else {
+                    if(!vastaanotettu.contains("//0") && !vastaanotettu.contains("//1") && !vastaanotettu.contains("@") && vastaanotettu.length() >2) {
                         shc.appendText(vastaanotettu);
                     }
                 }
