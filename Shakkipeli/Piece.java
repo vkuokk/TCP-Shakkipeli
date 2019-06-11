@@ -7,6 +7,8 @@ import javafx.scene.image.ImageView;
 public class Piece extends Button {
     private int side;
     private int[][] coords;
+    private int X;
+    private int Y;
     private int size;
     private ImageView iv;
     private String name;
@@ -57,4 +59,17 @@ public class Piece extends Button {
     public void setHighlight(){
         iv.setStyle("-fx-effect: dropshadow(gaussian, #ea2a15, 2, 1.0, 0, 0);");
     }
+    public void setX(int x){
+        this.X = x;
+    }
+    public void setY(int y){
+        this.Y = y;
+    }
+    public int getX(){
+        return this.X;
+    }
+    public int getY(){
+        return this.Y;
+    }
 }
+

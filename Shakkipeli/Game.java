@@ -211,6 +211,19 @@ public class Game {
         p.setTranslateX(r.localToParent(r.getX(),r.getY()).getX());
         p.setTranslateY(r.localToParent(r.getX(),r.getY()).getY());
 
+        int X = 0;
+        int Y = 0;
+        for(int i = 0; i<8;i++){
+            for(int j = 0; j<8;j++){
+                if(rcts[i][j] == r){
+                    X = j;
+                    Y = i;
+                }
+            }
+        }
+        p.setX(X);
+        p.setY(Y);
+
 
 
     }
@@ -228,11 +241,13 @@ public class Game {
         opponentLastMoved = p;
         opponentLastMoved.setHighlight();
 
+        //if(rec.localToParent(rec.getX(),rec.getY()).getX() == xCoord)
+
 
         //System.out.println(xCoord +" "+ yCoord);
         for(Piece pi : pieces){
-            //System.out.println("nappuloiden x ja y koordinaatit " + pi.getTranslateX() + " " +pi.getTranslateY());
-            if(pi.getTranslateX() == xCoord && pi.getTranslateY() == yCoord && pi != p){
+            System.out.println("nappuloiden x ja y koordinaatit " + pi.getTranslateX() + " " +pi.getTranslateY());
+            if(pi.getX() == xCoord && pi.getY() == yCoord ){
                 Platform.runLater(() -> {
                     cb.getChildren().remove(pi);
                 });
