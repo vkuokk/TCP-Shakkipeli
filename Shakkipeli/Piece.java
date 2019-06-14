@@ -3,6 +3,9 @@ package Shakkipeli;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.shape.Rectangle;
+
+import java.util.ArrayList;
 
 public class Piece extends Button {
     private int side;
@@ -75,5 +78,12 @@ public class Piece extends Button {
     public boolean validate(int X , int Y){
         return true;
     }
+
+    public String[] getMoves(){
+        return null;
+    }
+
 }
+
+
 

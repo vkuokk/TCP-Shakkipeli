@@ -110,6 +110,7 @@ public class Game {
             if(lastMoved !=null)lastMoved.removeHighlight();
             currentpiece = p;
             lastMoved = p;
+            ArrayList<Rectangle> canBeMoved = getAvailable(currentpiece,pieces,rcts);
             currentpiece.toFront();
             System.out.println("drag detected");
             p.setMouseTransparent(true);
@@ -482,6 +483,26 @@ public class Game {
         }
 
         return re;
+    }
+
+    public ArrayList<Rectangle> getAvailable (Piece pc, ArrayList<Piece> pcs, Rectangle[][] rct){
+        ArrayList<Rectangle> available = new ArrayList<>();
+        for( String s : pc.getMoves()){
+            switch(s){
+                case "FORWARD":
+                    int initialX = pc.getX();
+                    int initialY = pc.getY();
+                    for(int i = initialY; i>-1; i--){
+                         
+                    }
+
+                    if()
+
+                    break;
+            }
+        }
+
+        return;
     }
 
 

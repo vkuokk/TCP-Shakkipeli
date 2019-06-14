@@ -2,8 +2,12 @@ package Shakkipeli;
 
 import javafx.scene.image.Image;
 
+import java.util.ArrayList;
+
 public class Pawn extends Piece{
     private boolean hasMoved = false;
+    private String[] movable = {"FORWARD","DIAGONAL"};
+
 
     public Pawn(int side, int[][] coords, int size, String name){
         setName(name);
@@ -32,5 +36,8 @@ public class Pawn extends Piece{
         }
         else return false;
 
+    }
+    public String[] getMoves(){
+        return this.movable;
     }
 }
