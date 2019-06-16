@@ -7,7 +7,9 @@ import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.StrokeType;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -18,17 +20,19 @@ public class Game {
     private double moveStarty;
     private GridPane cb;
     private int sd;
+    private boolean dragged = false;
     private boolean turn = false;
     //@FXML
     //private Queen queen;
     private Piece currentpiece;
     private Piece lastMoved;
     private ArrayList<Piece> pieces = new ArrayList<>();
-    //private ArrayList<Rectangle> rectangles = new ArrayList<>();
+    private ArrayList<Rectangle> possibilities = new ArrayList<>();
     private Shakkicontroller shc;
 
     int[][] spaces = new int[8][8];
     Rectangle[][] rcts = new Rectangle[8][8];
+    Piece[][] pcs = new Piece[8][8];
     //
     private double mouseX, mouseY;
     private double oldX, oldY;
@@ -83,6 +87,7 @@ public class Game {
 
     public void setPieceListener(Piece p){
         p.setOnMousePressed(e -> {
+            dragged = false;
             moveStartx = p.getTranslateX();
             moveStarty = p.getTranslateY();
 
@@ -93,28 +98,47 @@ public class Game {
 
             p.setMouseTransparent(true);
 
-            
+
             e.consume();
         });
 
         p.setOnMouseReleased(e -> {
-
+            if(!dragged){
+                p.setTranslateX(moveStartx);
+                p.setTranslateY(moveStarty);
+            }
+            Bounds b = cb.getParent().getBoundsInLocal();
+            //System.out.println("Nappulan koordinaatit: " + p.getTranslateX() + " " +p.getTranslateY());
+            //System.out.println(b);
+            if(p.getTranslateX() < -1 || p.getTranslateX() > 500 || p.getTranslateY() < -1 || p.getTranslateY() > 500){
+                p.setTranslateX(moveStartx);
+                p.setTranslateY(moveStarty);
+            }
             Double d = cb.getMinHeight();
+            for(Rectangle r : possibilities){
+                r.setStrokeWidth(0);
+            }
             p.setMouseTransparent(false);
             e.consume();
 
         });
         p.setOnDragDetected(e -> {
-
+            dragged = true;
             p.startFullDrag();
             if(lastMoved !=null)lastMoved.removeHighlight();
             currentpiece = p;
             lastMoved = p;
-            ArrayList<Rectangle> canBeMoved = getAvailable(currentpiece,pieces,rcts);
+            ArrayList<Rectangle> canBeMoved = getAvailable(currentpiece);
+            possibilities = canBeMoved;
+            for(Rectangle r : possibilities){
+                r.setStrokeType(StrokeType.INSIDE);
+                r.setStrokeWidth(4);
+                r.setStroke(Color.GREEN);
+            }
+
             currentpiece.toFront();
             System.out.println("drag detected");
             p.setMouseTransparent(true);
-
             e.consume();
 
         });
@@ -139,24 +163,40 @@ public class Game {
             if(turn) {
                 Platform.runLater(() -> {
                     Rectangle r = getRbyC(p.getTranslateX(),p.getTranslateY());
-                    int X = 0;
-                    int Y = 0;
-                    for(int i = 0; i<8;i++){
-                        for(int j = 0; j<8;j++){
-                            if(rcts[i][j] == r){
-                                X = j;
-                                Y = i;
+                    if(possibilities.contains(r)) {
+                        int X = 0;
+                        int Y = 0;
+                        for (int i = 0; i < 8; i++) {
+                            for (int j = 0; j < 8; j++) {
+                                if (rcts[i][j] == r) {
+                                    X = j;
+                                    Y = i;
+                                }
                             }
                         }
+                        final int fX = X;
+                        final int fY = Y;
+                        shc.sendMove(fX, fY, currentpiece);
+                        //shc.sendMove(new Point2D(p.getTranslateX(),p.getTranslateY()), currentpiece);
+                        lastMoved.setHighlight();
+                        cb.getChildren().remove(p);
+
+                        for(int i = 0; i<8; i++){
+                            for(int j = 0; j<8; j++){
+                                if(pcs[i][j] != null && pcs[i][j].getName().equals(p.getName())) pcs[i][j] = null;
+
+                            }
+                        }
+
                     }
-                    final int fX = X;
-                    final int fY = Y;
-                    shc.sendMove(fX,fY,currentpiece);
-                    //shc.sendMove(new Point2D(p.getTranslateX(),p.getTranslateY()), currentpiece);
                 });
             }
-            lastMoved.setHighlight();
-           cb.getChildren().remove(p);
+
+            /*lastMoved.setHighlight();
+              cb.getChildren().remove(p);
+
+             */
+
         });
     }
 
@@ -185,7 +225,7 @@ public class Game {
             final int fX = X;
             final int fY = Y;
             System.out.println("tosend koord. " +fX + " " + fY);
-            if(turn && currentpiece.validate(fX,fY)) {
+            if(turn && possibilities.contains(r)) {
 
                 lastMoved.setHighlight();
                 Platform.runLater(() -> {
@@ -197,6 +237,7 @@ public class Game {
                 currentpiece.setTranslateY(r.localToParent(r.getX(), r.getY()).getY());
                 currentpiece.setX(fX);
                 currentpiece.setY(fY);
+                currentpiece.setHasMoved();
             }
             else{
                 currentpiece.setTranslateX(moveStartx);
@@ -440,7 +481,7 @@ public class Game {
             for(int i = 0;i<2;i++){
                 for(int j = 0; j<8; j++) {
                     move(topPieces[n], getRectangle(i, j, cb));
-
+                    pcs[i][j] = topPieces[n];
                     n++;
                 }
             }
@@ -449,6 +490,7 @@ public class Game {
             for(int i = 7;i>5;i--){
                 for(int j = 7; j>-1; j--){
                     move(bottomPieces[m], getRectangle(i,j,cb));
+                    pcs[i][j] = bottomPieces[m];
                     m++;
                 }
             }
@@ -485,24 +527,42 @@ public class Game {
         return re;
     }
 
-    public ArrayList<Rectangle> getAvailable (Piece pc, ArrayList<Piece> pcs, Rectangle[][] rct){
+    public ArrayList<Rectangle> getAvailable (Piece pc){
         ArrayList<Rectangle> available = new ArrayList<>();
         for( String s : pc.getMoves()){
             switch(s){
-                case "FORWARD":
+                case "FORWARD": {
                     int initialX = pc.getX();
                     int initialY = pc.getY();
-                    for(int i = initialY; i>-1; i--){
-                         
+                    for (int i = initialY - 1; i > -1; i--) {
+                        if(pcs[i][initialX] == null)available.add(rcts[i][initialX]);
+                        if (pc.getPieceType().equals("pawn")) {
+                            if (pc.gethasMoved()) break;
+                            if (i - initialY == -2) break;
+                        }
                     }
+                    break;
+                }
 
-                    if()
+                case "DIAGONAL":
+                    int initialX = pc.getX();
+                    int initialY = pc.getY();
+                    int pX = initialX;
+                    int mX = initialX;
+                    for(int i = initialY-1; i>-1; i--){
+                        pX = pX+1;
+                        mX = mX-1;
+                        if(i == initialY-1 && pc.getPieceType().equals("pawn")){
+                            if(pcs[i][pX] != null) available.add(rcts[i][pX]);
+                            if(pcs[i][mX] != null) available.add(rcts[i][mX]);
+                        }
+                    }
 
                     break;
             }
         }
 
-        return;
+        return available;
     }
 
 

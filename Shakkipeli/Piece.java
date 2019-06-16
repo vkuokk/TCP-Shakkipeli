@@ -15,6 +15,8 @@ public class Piece extends Button {
     private int size;
     private ImageView iv;
     private String name;
+    private String pieceType;
+    private boolean hasMoved = false;
 
     public Piece(){
         this.setPickOnBounds(true);
@@ -74,6 +76,7 @@ public class Piece extends Button {
     public int getY(){
         return this.Y;
     }
+    public void setPieceType(String s){this.pieceType = s;}
 
     public boolean validate(int X , int Y){
         return true;
@@ -82,7 +85,16 @@ public class Piece extends Button {
     public String[] getMoves(){
         return null;
     }
+    public String getPieceType(){
+        return this.pieceType;
+    }
 
+    public boolean gethasMoved(){
+        return this.hasMoved;
+    }
+    public void setHasMoved(){
+        this.hasMoved = true;
+    }
 }
 
 

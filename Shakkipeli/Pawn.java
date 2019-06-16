@@ -5,7 +5,6 @@ import javafx.scene.image.Image;
 import java.util.ArrayList;
 
 public class Pawn extends Piece{
-    private boolean hasMoved = false;
     private String[] movable = {"FORWARD","DIAGONAL"};
 
 
@@ -14,6 +13,8 @@ public class Pawn extends Piece{
         setSide(side);
         setCoords(coords);
         setSize(size);
+        setPieceType("pawn");
+
         Image img;
         if(side == 0) {
             img = new Image(getClass().getResourceAsStream("assets/bp.png"),size,size,true,true);
@@ -24,7 +25,7 @@ public class Pawn extends Piece{
         setIv(img);
 
     }
-
+/*
     public boolean validate(int X, int Y){
         if(!hasMoved && this.getY()-Y == 2){
             hasMoved = true;
@@ -37,7 +38,11 @@ public class Pawn extends Piece{
         else return false;
 
     }
+
+ */
     public String[] getMoves(){
         return this.movable;
     }
+
+
 }
