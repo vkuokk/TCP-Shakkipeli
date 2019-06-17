@@ -185,10 +185,21 @@ public class Game {
 
                         for(int i = 0; i<8; i++){
                             for(int j = 0; j<8; j++){
-                                if(pcs[i][j] != null && pcs[i][j].getName().equals(p.getName())) pcs[i][j] = null;
+                                if(pcs[i][j] != null && pcs[i][j].getName().equals(p.getName())){
+                                    pcs[i][j] = currentpiece;
+                                    currentpiece.setX(j);
+                                    currentpiece.setY(i);
+
+                                }
 
                             }
                         }
+                        for(Rectangle re : possibilities){
+                            re.setStrokeWidth(0);
+                        }
+                        pcs[currentpiece.getX()][currentpiece.getY()] = null;
+                        possibilities = new ArrayList<>();
+
 
                     }
                 });
@@ -214,29 +225,26 @@ public class Game {
             //Oikea translate 0,0 ruudun suhteen:
 
 
-            int X = 0;
-            int Y = 0;
-            for(int i = 0; i<8;i++){
-                for(int j = 0; j<8;j++){
-                    if(rcts[i][j] == r){
-                        X = j;
-                        Y = i;
-                    }
-                }
-            }
-            final int fX = X;
-            final int fY = Y;
-            System.out.println("tosend koord. " +fX + " " + fY);
+
             if(turn && possibilities.contains(r)) {
 
                 lastMoved.setHighlight();
-                Platform.runLater(() -> {
-                    //shc.sendMove(r.localToParent(r.getX(), r.getY()), currentpiece);
-                    shc.sendMove(fX, fY, currentpiece);
-                });
+                int X = 0;
+                int Y = 0;
+                for(int i = 0; i<8;i++){
+                    for(int j = 0; j<8;j++){
+                        if(rcts[i][j] == r){
+                            X = j;
+                            Y = i;
+                        }
+                    }
+                }
+                final int fX = X;
+                final int fY = Y;
+                System.out.println("tosend koord. " +fX + " " + fY);
 
                 pcs[currentpiece.getY()][currentpiece.getX()] = null;
-                pcs[X][Y] = currentpiece;
+                pcs[Y][X] = currentpiece;
 
                 currentpiece.setTranslateX(r.localToParent(r.getX(), r.getY()).getX());
                 currentpiece.setTranslateY(r.localToParent(r.getX(), r.getY()).getY());
@@ -247,8 +255,12 @@ public class Game {
                 for(Rectangle re : possibilities){
                     re.setStrokeWidth(0);
                 }
-                possibilities = new ArrayList<>();
 
+                Platform.runLater(() -> {
+                    //shc.sendMove(r.localToParent(r.getX(), r.getY()), currentpiece);
+                    shc.sendMove(fX, fY, currentpiece);
+                });
+                //possibilities = new ArrayList<>();
             }
             else{
                 currentpiece.setTranslateX(moveStartx);
@@ -312,6 +324,9 @@ public class Game {
                 });
             }
         }
+
+        pcs[p.getY()][p.getX()] = null;
+        pcs[yCoord][xCoord] = p;
         p.setX(xCoord);
         p.setY(yCoord);
 
