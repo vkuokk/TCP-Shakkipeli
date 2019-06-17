@@ -9,6 +9,7 @@ public class Knight extends Piece {
         setCoords(coords);
         setSize(size);
         setPieceType("knight");
+        setMovable(new String[]{"KNIGHT"});
         Image img;
         if(side == 0) {
             img = new Image(getClass().getResourceAsStream("assets/bkn.png"),size,size,true,true);
@@ -19,4 +20,5 @@ public class Knight extends Piece {
         setIv(img);
 
     }
+
 }

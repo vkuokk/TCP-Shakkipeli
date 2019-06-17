@@ -10,6 +10,7 @@ public class Bishop extends Piece {
         setCoords(coords);
         setSize(size);
         setPieceType("bishop");
+        setMovable(new String[]{"DIAGONAL"});
         Image img;
         if(side == 0) {
             img = new Image(getClass().getResourceAsStream("assets/bb.png"),size,size,true,true);
@@ -21,4 +22,5 @@ public class Bishop extends Piece {
         setIv(img);
 
     }
+
 }

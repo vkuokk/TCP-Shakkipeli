@@ -9,6 +9,7 @@ public class King extends Piece {
         setCoords(coords);
         setSize(size);
         setPieceType("king");
+        setMovable(new String[]{"FORWARD","DIAGONAL","SIDEWAYS","BACKWARDS"});
         Image img;
         if(side == 0) {
             img = new Image(getClass().getResourceAsStream("assets/bk.png"),size,size,true,true);
@@ -17,9 +18,9 @@ public class King extends Piece {
             img = new Image(getClass().getResourceAsStream("assets/wk.png"),size,size,true,true);
         }
 
-
         setIv(img);
 
 
     }
+
 }

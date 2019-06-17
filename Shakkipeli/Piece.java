@@ -17,6 +17,7 @@ public class Piece extends Button {
     private String name;
     private String pieceType;
     private boolean hasMoved = false;
+    private String[] movable;
 
     public Piece(){
         this.setPickOnBounds(true);
@@ -77,14 +78,14 @@ public class Piece extends Button {
         return this.Y;
     }
     public void setPieceType(String s){this.pieceType = s;}
+    public void setMovable(String[] s){
+        this.movable = s;
+    }
 
     public boolean validate(int X , int Y){
         return true;
     }
 
-    public String[] getMoves(){
-        return null;
-    }
     public String getPieceType(){
         return this.pieceType;
     }
@@ -94,6 +95,9 @@ public class Piece extends Button {
     }
     public void setHasMoved(){
         this.hasMoved = true;
+    }
+    public String[] getMoves(){
+        return this.movable;
     }
 }
 

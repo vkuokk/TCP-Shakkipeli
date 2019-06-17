@@ -1,15 +1,6 @@
 package Shakkipeli;
 
-import javafx.scene.control.Button;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.SVGPath;
-
-import java.net.URISyntaxException;
-
 public class Queen extends Piece {
 
     public Queen(int side, int[][] coords, int size, String name){
@@ -18,6 +9,7 @@ public class Queen extends Piece {
         setCoords(coords);
         setSize(size);
         setPieceType("queen");
+        setMovable(new String[]{"FORWARD","DIAGONAL","SIDEWAYS","BACKWARDS"});
         Image img;
         if(side == 0) {
             img = new Image(getClass().getResourceAsStream("assets/bq2.png"),size,size,true,true);

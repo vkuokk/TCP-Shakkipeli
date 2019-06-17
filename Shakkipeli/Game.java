@@ -103,11 +103,12 @@ public class Game {
         });
 
         p.setOnMouseReleased(e -> {
-            if(!dragged){
+            Rectangle r = getRbyC(p.getTranslateX(),p.getTranslateY());
+
+            if(!dragged || !possibilities.contains(r)){
                 p.setTranslateX(moveStartx);
                 p.setTranslateY(moveStarty);
             }
-            Bounds b = cb.getParent().getBoundsInLocal();
             //System.out.println("Nappulan koordinaatit: " + p.getTranslateX() + " " +p.getTranslateY());
             //System.out.println(b);
             if(p.getTranslateX() < -1 || p.getTranslateX() > 500 || p.getTranslateY() < -1 || p.getTranslateY() > 500){
@@ -115,8 +116,8 @@ public class Game {
                 p.setTranslateY(moveStarty);
             }
             Double d = cb.getMinHeight();
-            for(Rectangle r : possibilities){
-                r.setStrokeWidth(0);
+            for(Rectangle re : possibilities){
+                re.setStrokeWidth(0);
             }
             p.setMouseTransparent(false);
             e.consume();
@@ -157,13 +158,14 @@ public class Game {
         });
 
         p.setOnMouseDragReleased(e -> {
-            currentpiece.setTranslateX(p.getTranslateX());
-            currentpiece.setTranslateY(p.getTranslateY());
             lastMoved = currentpiece;
             if(turn) {
                 Platform.runLater(() -> {
                     Rectangle r = getRbyC(p.getTranslateX(),p.getTranslateY());
                     if(possibilities.contains(r)) {
+
+                        currentpiece.setTranslateX(p.getTranslateX());
+                        currentpiece.setTranslateY(p.getTranslateY());
                         int X = 0;
                         int Y = 0;
                         for (int i = 0; i < 8; i++) {
@@ -233,11 +235,20 @@ public class Game {
                     shc.sendMove(fX, fY, currentpiece);
                 });
 
+                pcs[currentpiece.getY()][currentpiece.getX()] = null;
+                pcs[X][Y] = currentpiece;
+
                 currentpiece.setTranslateX(r.localToParent(r.getX(), r.getY()).getX());
                 currentpiece.setTranslateY(r.localToParent(r.getX(), r.getY()).getY());
                 currentpiece.setX(fX);
                 currentpiece.setY(fY);
                 currentpiece.setHasMoved();
+
+                for(Rectangle re : possibilities){
+                    re.setStrokeWidth(0);
+                }
+                possibilities = new ArrayList<>();
+
             }
             else{
                 currentpiece.setTranslateX(moveStartx);
@@ -529,19 +540,40 @@ public class Game {
 
     public ArrayList<Rectangle> getAvailable (Piece pc){
         ArrayList<Rectangle> available = new ArrayList<>();
+        String side = "";
+        if(sd == 0) side = "b";
+        if(sd == 1) side = "w";
         for( String s : pc.getMoves()){
             switch(s){
                 case "FORWARD": {
                     int initialX = pc.getX();
                     int initialY = pc.getY();
                     for (int i = initialY - 1; i > -1; i--) {
-                        if(pcs[i][initialX] == null)available.add(rcts[i][initialX]);
+                        Piece inFront = pcs[i][initialX];
+                        Rectangle next = rcts[i][initialX];
+                        if(inFront == null)available.add(next);
+                        if(inFront != null && inFront.getName().startsWith(side)) break;
                         if (pc.getPieceType().equals("pawn")) {
                             if (pc.gethasMoved()) break;
                             if (i - initialY == -2) break;
                         }
+                        if(pc.getPieceType().equals("king")){
+                            if(inFront != null) {
+                                if (!inFront.getName().startsWith(side) && !available.contains(next))
+                                    available.add(next);
+                                break;
+                            }
+                            break;
+                            }
+                        if(pc.getPieceType().equals("rook")){
+                            if(!inFront.getName().startsWith(side)){
+                                available.add(next);
+                                break;
+                            }
+                            if(inFront.getName().startsWith(side)) break;
+                        }
                     }
-                    break;
+                break;
                 }
 
                 case "DIAGONAL":
@@ -552,7 +584,7 @@ public class Game {
                     for(int i = initialY-1; i>-1; i--){
                         pX = pX+1;
                         mX = mX-1;
-                        if(i == initialY-1 && pc.getPieceType().equals("pawn")){
+                        if(i == initialY-1 && pX<8 && mX>-1 && pc.getPieceType().equals("pawn")){
                             if(pcs[i][pX] != null) available.add(rcts[i][pX]);
                             if(pcs[i][mX] != null) available.add(rcts[i][mX]);
                         }
