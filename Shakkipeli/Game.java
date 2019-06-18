@@ -586,76 +586,131 @@ public class Game {
                             }
                             break;
                             }
-                        if(pc.getPieceType().equals("rook")){
-                            if(!inFront.getName().startsWith(side)){
+                        if(pc.getPieceType().equals("rook") || pc.getPieceType().equals("queen")){
+                            if(inFront != null && !inFront.getName().startsWith(side)){
                                 available.add(next);
                                 break;
                             }
-                            if(inFront.getName().startsWith(side)) break;
                         }
                     }
                 //break;
                 }
+                break;
 
-                case "DIAGONAL":
+                case "DIAGONAL": {
                     int initialX = pc.getX();
                     int initialY = pc.getY();
                     int yDown = initialY;
                     int pX = initialX;
                     int mX = initialX;
-                    boolean upperLeftlimit = false;
-                    boolean upperRightlimit= false;
-                    boolean downLeftlimit=false;
-                    boolean downRightlimit=false;
-
-                    for(int i = initialY-1; i>-1; i--){
-                        pX = pX+1;
-                        mX = mX-1;
-                        yDown = yDown+1;
-                        Piece upperLeft = null;
-                        Piece upperRight = null;
-                        Piece downLeft = null;
-                        Piece downRight = null;
-                        if(pX<8 && mX>-1) {
-                            upperLeft = pcs[i][mX];
-                            upperRight = pcs[i][pX];
-                            if(yDown<8) {
-                                downLeft = pcs[yDown][mX];
-                                downRight = pcs[yDown][pX];
-                            }
+                    if (pc.getPieceType().equals("pawn") && initialY > 1) {
+                        if (initialX > 0 && pcs[initialY - 1][initialX - 1] != null && !pcs[initialY - 1][initialX - 1].getName().startsWith(side)) {
+                            available.add(rcts[initialY - 1][initialX - 1]);
                         }
-                        if(upperLeft != null && upperRight != null && i == initialY-1 && pX<8 && mX>-1 && pc.getPieceType().equals("pawn")){
-                            if(upperRight != null && !upperLeft.getName().startsWith(side)) available.add(rcts[i][pX]);
-                            if(upperLeft != null && !upperRight.getName().startsWith(side)) available.add(rcts[i][mX]);
+                        if (initialX < 7 && pcs[initialY - 1][initialX + 1] != null && !pcs[initialY - 1][initialX + 1].getName().startsWith(side)) {
+                            available.add(rcts[initialY - 1][initialX + 1]);
                         }
-                        if(pc.getPieceType().equals("bishop") || pc.getPieceType().equals("queen")){
-                            if(!upperRightlimit && upperRight != null &&pX<8 && mX>-1){
-                                if(!upperRight.getName().startsWith(side))available.add(rcts[i][pX]);
-                                upperRightlimit = true;
-                            }
-                            if(!upperLeftlimit && upperLeft != null && pX<8 && mX>-1){
-                                if(!upperLeft.getName().startsWith(side))available.add(rcts[i][mX]);
-                                upperLeftlimit = true;
-                            }
-                            if(!downRightlimit && downRight != null && pX<8 && mX>-1){
-                                if(!downRight.getName().startsWith(side))available.add(rcts[yDown][pX]);
-                                downRightlimit = true;
 
-                            }
-                            if(!downLeftlimit && downLeft != null && pX<8 && mX>-1){
-                                if(!downRight.getName().startsWith(side))available.add(rcts[yDown][mX]);
-                                downLeftlimit = true;
-                            }
+                    }
+                    if (pc.getPieceType().equals("bishop") || pc.getPieceType().equals("queen")) {
 
-                            if(!upperRightlimit &&upperRight == null && pX<8) available.add(rcts[i][pX]);
-                            if(!upperLeftlimit &&upperLeft == null && mX>-1) available.add(rcts[i][mX]);
-                            if(!downRightlimit && downRight == null && pX<8 && yDown <8) available.add(rcts[yDown][pX]);
-                            if(!downLeftlimit && downLeft == null && mX>-1 && yDown <8) available.add(rcts[yDown][mX]);
+                        //Ylävasen
+                        for (int i = initialY - 1; i > -1; i--) {
+                            mX = mX - 1;
+                            if (mX > -1 && pcs[i][mX] == null) available.add(rcts[i][mX]);
+                            if (mX > -1 && pcs[i][mX] != null && !pcs[i][mX].getName().startsWith(side)) {
+                                available.add(rcts[i][mX]);
+                                break;
+                            }
+                            if (mX > -1 && pcs[i][mX] != null && pcs[i][mX].getName().startsWith(side)) break;
                         }
+                        mX = initialX;
+
+                        //Yläoikea
+                        for (int i = initialY - 1; i > -1; i--) {
+                            pX = pX + 1;
+                            if (pX < 8 && pcs[i][pX] == null) available.add(rcts[i][pX]);
+                            if (pX < 8 && pcs[i][pX] != null && !pcs[i][pX].getName().startsWith(side)) {
+                                available.add(rcts[i][pX]);
+                                break;
+                            }
+                            if (pX < 8 && pcs[i][pX] != null && pcs[i][pX].getName().startsWith(side)) break;
+                        }
+                        pX = initialX;
+
+                        //Alavasen
+                        for (int i = initialY + 1; i < 8; i++) {
+                            mX = mX - 1;
+                            if (mX > -1 && pcs[i][mX] == null) available.add(rcts[i][mX]);
+                            if (mX > -1 && pcs[i][mX] != null && !pcs[i][mX].getName().startsWith(side)) {
+                                available.add(rcts[i][mX]);
+                                break;
+                            }
+                            if (mX > -1 && pcs[i][mX] != null && pcs[i][mX].getName().startsWith(side)) break;
+                        }
+                        mX = initialX;
+                        //Alaoikea
+                        for (int i = initialY + 1; i < 8; i++) {
+                            pX = pX + 1;
+                            if (pX < 8 && pcs[i][pX] == null) available.add(rcts[i][pX]);
+                            if (pX < 8 && pcs[i][pX] != null && !pcs[i][pX].getName().startsWith(side)) {
+                                available.add(rcts[i][pX]);
+                                break;
+                            }
+                            if (pX < 8 && pcs[i][pX] != null && pcs[i][pX].getName().startsWith(side)) break;
+                        }
+                        pX = initialX;
+                    }
+
+                }
+                break;
+
+                case "KNIGHT": {
+                    int initialX = pc.getX();
+                    int initialY = pc.getY();
+                    //Yläpuolen liikkeen validointi
+                    if (initialX > 1 && initialY > 0){
+                        if(pcs[initialY - 1][initialX - 2] != null && !pcs[initialY-1][initialX-2].getName().startsWith(side)) available.add(rcts[initialY-1][initialX-2]);
+                        if(pcs[initialY -1][initialX -2 ] == null) available.add(rcts[initialY-1][initialX-2]);
+                    }
+
+                    if (initialX > 0 && initialY > 1){
+                        if(pcs[initialY - 2][initialX - 1] != null && !pcs[initialY-2][initialX-1].getName().startsWith(side)) available.add(rcts[initialY-2][initialX-1]);
+                        if(pcs[initialY - 2][initialX - 1] == null) available.add(rcts[initialY-2][initialX-1]);
+                    }
+
+                    if (initialX <7 && initialY >1){
+                        if(pcs[initialY -2][initialX +1] != null && !pcs[initialY-2][initialX+1].getName().startsWith(side)) available.add(rcts[initialY-2][initialX+1]);
+                        if(pcs[initialY -2][initialX +1] == null) available.add(rcts[initialY-2][initialX+1]);
+                    }
+                    if (initialX <5 && initialY >0){
+                        if(pcs[initialY -1][initialX +2] != null && !pcs[initialY-1][initialX+2].getName().startsWith(side)) available.add(rcts[initialY-1][initialX+2]);
+                        if(pcs[initialY -1][initialX +2] == null) available.add(rcts[initialY-1][initialX+2]);
+                    }
+
+                    //Alapuolen liikkeen validointi
+                    if (initialX > 1 && initialY < 7){
+                        if(pcs[initialY + 1][initialX - 2] != null && !pcs[initialY+1][initialX-2].getName().startsWith(side)) available.add(rcts[initialY+1][initialX-2]);
+                        if(pcs[initialY +1][initialX -2 ] == null) available.add(rcts[initialY+1][initialX-2]);
+                    }
+                    if (initialX > 0 && initialY < 6){
+                        if(pcs[initialY + 2][initialX - 1] != null && !pcs[initialY+2][initialX-1].getName().startsWith(side)) available.add(rcts[initialY+2][initialX-1]);
+                        if(pcs[initialY +2][initialX -1 ] == null) available.add(rcts[initialY+2][initialX-1]);
+                    }
+
+                    if (initialX <7 && initialY < 5){
+                        if(pcs[initialY + 2][initialX +1] != null && !pcs[initialY+2][initialX+1].getName().startsWith(side)) available.add(rcts[initialY+2][initialX+1]);
+                        if(pcs[initialY +2][initialX +1 ] == null) available.add(rcts[initialY+2][initialX+1]);
+                    }
+                    if (initialX <5 && initialY < 7){
+                        if(pcs[initialY + 1][initialX +2] != null && !pcs[initialY+1][initialX+2].getName().startsWith(side)) available.add(rcts[initialY+1][initialX+2]);
+                        if(pcs[initialY +1][initialX +2 ] == null) available.add(rcts[initialY+1][initialX+2]);
                     }
 
 
-                    break;
+                }
+                break;
+
             }
         }
 
