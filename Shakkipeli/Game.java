@@ -181,23 +181,29 @@ public class Game {
                         shc.sendMove(fX, fY, currentpiece);
                         //shc.sendMove(new Point2D(p.getTranslateX(),p.getTranslateY()), currentpiece);
                         lastMoved.setHighlight();
-                        cb.getChildren().remove(p);
-
+                        /*
                         for(int i = 0; i<8; i++){
                             for(int j = 0; j<8; j++){
                                 if(pcs[i][j] != null && pcs[i][j].getName().equals(p.getName())){
                                     pcs[i][j] = currentpiece;
-                                    currentpiece.setX(j);
-                                    currentpiece.setY(i);
+                                    currentpiece.setX(i);
+                                    currentpiece.setY(j);
 
                                 }
 
                             }
                         }
+                         */
+                        pcs[p.getY()][p.getX()] = currentpiece;
+                        pcs[currentpiece.getY()][currentpiece.getX()] = null;
+                        currentpiece.setX(p.getX());
+                        currentpiece.setY(p.getY());
+                        cb.getChildren().remove(p);
+
+
                         for(Rectangle re : possibilities){
                             re.setStrokeWidth(0);
                         }
-                        pcs[currentpiece.getX()][currentpiece.getY()] = null;
                         possibilities = new ArrayList<>();
 
 
@@ -588,22 +594,66 @@ public class Game {
                             if(inFront.getName().startsWith(side)) break;
                         }
                     }
-                break;
+                //break;
                 }
 
                 case "DIAGONAL":
                     int initialX = pc.getX();
                     int initialY = pc.getY();
+                    int yDown = initialY;
                     int pX = initialX;
                     int mX = initialX;
+                    boolean upperLeftlimit = false;
+                    boolean upperRightlimit= false;
+                    boolean downLeftlimit=false;
+                    boolean downRightlimit=false;
+
                     for(int i = initialY-1; i>-1; i--){
                         pX = pX+1;
                         mX = mX-1;
-                        if(i == initialY-1 && pX<8 && mX>-1 && pc.getPieceType().equals("pawn")){
-                            if(pcs[i][pX] != null) available.add(rcts[i][pX]);
-                            if(pcs[i][mX] != null) available.add(rcts[i][mX]);
+                        yDown = yDown+1;
+                        Piece upperLeft = null;
+                        Piece upperRight = null;
+                        Piece downLeft = null;
+                        Piece downRight = null;
+                        if(pX<8 && mX>-1) {
+                            upperLeft = pcs[i][mX];
+                            upperRight = pcs[i][pX];
+                            if(yDown<8) {
+                                downLeft = pcs[yDown][mX];
+                                downRight = pcs[yDown][pX];
+                            }
+                        }
+                        if(upperLeft != null && upperRight != null && i == initialY-1 && pX<8 && mX>-1 && pc.getPieceType().equals("pawn")){
+                            if(upperRight != null && !upperLeft.getName().startsWith(side)) available.add(rcts[i][pX]);
+                            if(upperLeft != null && !upperRight.getName().startsWith(side)) available.add(rcts[i][mX]);
+                        }
+                        if(pc.getPieceType().equals("bishop") || pc.getPieceType().equals("queen")){
+                            if(!upperRightlimit && upperRight != null &&pX<8 && mX>-1){
+                                if(!upperRight.getName().startsWith(side))available.add(rcts[i][pX]);
+                                upperRightlimit = true;
+                            }
+                            if(!upperLeftlimit && upperLeft != null && pX<8 && mX>-1){
+                                if(!upperLeft.getName().startsWith(side))available.add(rcts[i][mX]);
+                                upperLeftlimit = true;
+                            }
+                            if(!downRightlimit && downRight != null && pX<8 && mX>-1){
+                                if(!downRight.getName().startsWith(side))available.add(rcts[yDown][pX]);
+                                downRightlimit = true;
+
+                            }
+                            if(!downLeftlimit && downLeft != null && pX<8 && mX>-1){
+                                if(!downRight.getName().startsWith(side))available.add(rcts[yDown][mX]);
+                                downLeftlimit = true;
+                            }
+
+                            if(!upperRightlimit &&upperRight == null && pX<8) available.add(rcts[i][pX]);
+                            if(!upperLeftlimit &&upperLeft == null && mX>-1) available.add(rcts[i][mX]);
+                            if(!downRightlimit && downRight == null && pX<8 && yDown <8) available.add(rcts[yDown][pX]);
+                            if(!downLeftlimit && downLeft == null && mX>-1 && yDown <8) available.add(rcts[yDown][mX]);
                         }
                     }
+
 
                     break;
             }
