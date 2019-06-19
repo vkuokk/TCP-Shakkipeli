@@ -9,7 +9,7 @@ public class King extends Piece {
         setCoords(coords);
         setSize(size);
         setPieceType("king");
-        setMovable(new String[]{"FORWARD","DIAGONAL","SIDEWAYS","BACKWARDS"});
+        setMovable(new String[]{"KING"});
         Image img;
         if(side == 0) {
             img = new Image(getClass().getResourceAsStream("assets/bk.png"),size,size,true,true);

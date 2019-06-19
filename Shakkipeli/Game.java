@@ -593,7 +593,6 @@ public class Game {
                             }
                         }
                     }
-                //break;
                 }
                 break;
 
@@ -711,7 +710,82 @@ public class Game {
                 }
                 break;
 
+                case "SIDEWAYS AND BACKWARDS": {
+                    int initialX = pc.getX();
+                    int initialY = pc.getY();
+
+                    //Alemmat tornille ja kuningattarelle
+                    //oikealle
+
+                    for(int i = initialX+1;i<8;i++){
+                        if(initialX >6) break;
+                        Piece toRight = pcs[initialY][i];
+                        if(toRight != null && !toRight.getName().startsWith(side)){
+                            available.add(rcts[initialY][i]);
+                            break;
+                        }
+                        if(toRight != null && toRight.getName().startsWith(side)) break;
+                        if(toRight == null) available.add(rcts[initialY][i]);
+
+                    }
+
+                    //vasemmalle
+                    for(int i = initialX-1; i>-1; i--){
+                        if(initialX<1) break;
+                        Piece toLeft = pcs[initialY][i];
+                        if(toLeft != null && !toLeft.getName().startsWith(side)){
+                            available.add(rcts[initialY][i]);
+                            break;
+                        }
+                        if(toLeft != null && toLeft.getName().startsWith(side)) break;
+                        if(toLeft == null) available.add(rcts[initialY][i]);
+                    }
+
+                    //alas
+                    for(int i = initialY+1;i<8;i++){
+                        if(initialY >6) break;
+                        Piece down = pcs[i][initialX];
+                        if(down != null && !down.getName().startsWith(side)){
+                            available.add(rcts[i][initialX]);
+                            break;
+                        }
+                        if(down != null && down.getName().startsWith(side)) break;
+                        if(down == null) available.add(rcts[i][initialX]);
+                    }
+
+                }
+                break;
+
+                case "KING":{
+                    int initialX = pc.getX();
+                    int initialY = pc.getY();
+                    //alas ylös ja sivuille
+                    if(initialX >0 && pcs[initialY][initialX-1] != null && !pcs[initialY][initialX-1].getName().startsWith(side)) available.add(rcts[initialY][initialX-1]);
+                    if(initialY <7 && pcs[initialY+1][initialX] != null && !pcs[initialY+1][initialX].getName().startsWith(side)) available.add(rcts[initialY+1][initialX]);
+                    if(initialX <7 && pcs[initialY][initialX+1] != null && !pcs[initialY][initialX+1].getName().startsWith(side)) available.add(rcts[initialY][initialX+1]);
+                    if(initialY >0 && pcs[initialY-1][initialX] != null && !pcs[initialY-1][initialX].getName().startsWith(side)) available.add(rcts[initialY-1][initialX]);
+
+                    if(initialX > 0 &&pcs[initialY][initialX-1] == null) available.add(rcts[initialY][initialX-1]);
+                    if(initialY <7 &&pcs[initialY+1][initialX] == null) available.add(rcts[initialY+1][initialX]);
+                    if(initialX <7 &&pcs[initialY][initialX+1] == null) available.add(rcts[initialY][initialX+1]);
+                    if(initialY > 0 &&pcs[initialY-1][initialX] == null) available.add(rcts[initialY-1][initialX]);
+
+                    //nurkat
+                    if(initialY >0 && initialX >0 && pcs[initialY-1][initialX-1] != null && !pcs[initialY-1][initialX-1].getName().startsWith(side)) available.add(rcts[initialY-1][initialX-1]);
+                    if(initialY >0 && initialX <7 && pcs[initialY-1][initialX+1] != null && !pcs[initialY-1][initialX+1].getName().startsWith(side)) available.add(rcts[initialY-1][initialX+1]);
+                    if(initialY <7 && initialX <7 && pcs[initialY+1][initialX+1] != null && !pcs[initialY+1][initialX+1].getName().startsWith(side)) available.add(rcts[initialY+1][initialX+1]);
+                    if(initialY <7 && initialX >0 && pcs[initialY+1][initialX-1] != null && !pcs[initialY+1][initialX-1].getName().startsWith(side)) available.add(rcts[initialY+1][initialX-1]);
+
+                    if(initialY >0 && initialX >0 && pcs[initialY-1][initialX-1] == null) available.add(rcts[initialY-1][initialX-1]);
+                    if(initialY >0 && initialX <7 && pcs[initialY-1][initialX+1] == null) available.add(rcts[initialY-1][initialX+1]);
+                    if(initialY <7 && initialX <7 && pcs[initialY+1][initialX+1] == null) available.add(rcts[initialY+1][initialX+1]);
+                    if(initialY <7 && initialX >0 && pcs[initialY+1][initialX-1] == null) available.add(rcts[initialY+1][initialX-1]);
+
+
+                }
+                break;
             }
+
         }
 
         return available;

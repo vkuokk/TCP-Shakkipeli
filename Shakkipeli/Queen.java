@@ -9,7 +9,7 @@ public class Queen extends Piece {
         setCoords(coords);
         setSize(size);
         setPieceType("queen");
-        setMovable(new String[]{"FORWARD","DIAGONAL","SIDEWAYS","BACKWARDS"});
+        setMovable(new String[]{"FORWARD","DIAGONAL","SIDEWAYS AND BACKWARDS"});
         Image img;
         if(side == 0) {
             img = new Image(getClass().getResourceAsStream("assets/bq2.png"),size,size,true,true);

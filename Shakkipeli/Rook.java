@@ -12,7 +12,7 @@ public class Rook extends Piece{
         setCoords(coords);
         setSize(size);
         setPieceType("rook");
-        setMovable(new String[]{"FORWARD","SIDEWAYS","BACKWARDS"});
+        setMovable(new String[]{"FORWARD","SIDEWAYS AND BACKWARDS"});
         Image img;
         if(side == 0) {
             img = new Image(getClass().getResourceAsStream("assets/br.png"),size,size,true,true);
