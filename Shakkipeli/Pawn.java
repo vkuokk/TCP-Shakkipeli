@@ -15,13 +15,17 @@ public class Pawn extends Piece{
         setPieceType("pawn");
         setMovable(new String[]{"FORWARD","DIAGONAL"});
 
-
+        ClassLoader cl = getClass().getClassLoader();
         Image img;
         if(side == 0) {
-            img = new Image(getClass().getResourceAsStream("assets/bp.png"),size,size,true,true);
+            String imgurl = cl.getResource("assets/bp.png").toExternalForm();
+            img = new Image(imgurl,size,size,true,true);
+            //img = new Image(getClass().getResourceAsStream("assets/bp.png"),size,size,true,true);
         }
         else{
-            img = new Image(getClass().getResourceAsStream("assets/wp.png"),size,size,true,true);
+            String imgurl = cl.getResource("assets/wp.png").toExternalForm();
+            img = new Image(imgurl,size,size,true,true);
+            //img = new Image(getClass().getResourceAsStream("assets/wp.png"),size,size,true,true);
         }
         setIv(img);
 

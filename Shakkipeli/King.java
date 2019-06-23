@@ -11,11 +11,16 @@ public class King extends Piece {
         setPieceType("king");
         setMovable(new String[]{"KING"});
         Image img;
+        ClassLoader cl = getClass().getClassLoader();
         if(side == 0) {
-            img = new Image(getClass().getResourceAsStream("assets/bk.png"),size,size,true,true);
+            String imgurl = cl.getResource("assets/bk.png").toExternalForm();
+            img = new Image(imgurl,size,size,true,true);
+            //img = new Image(getClass().getResourceAsStream("assets/bk.png"),size,size,true,true);
         }
         else{
-            img = new Image(getClass().getResourceAsStream("assets/wk.png"),size,size,true,true);
+            String imgurl = cl.getResource("assets/wk.png").toExternalForm();
+            img = new Image(imgurl,size,size,true,true);
+            //img = new Image(getClass().getResourceAsStream("assets/wk.png"),size,size,true,true);
         }
 
         setIv(img);

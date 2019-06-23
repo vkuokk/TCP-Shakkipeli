@@ -54,7 +54,7 @@ public class Game {
 
 
         int size = cb.heightProperty().intValue() / 8;
-        cb.setGridLinesVisible(true);
+        //cb.setGridLinesVisible(true);
         cb.getColumnConstraints().add(new ColumnConstraints(0));
         cb.getRowConstraints().add(new RowConstraints(0));
 

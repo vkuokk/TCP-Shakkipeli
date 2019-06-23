@@ -1,6 +1,7 @@
 package Shakkipeli;
 
 import javafx.application.Platform;
+import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -14,6 +15,9 @@ import java.util.ResourceBundle;
 import java.util.Optional;
 
 import javafx.scene.control.TextInputDialog;
+import javafx.stage.Stage;
+import javafx.stage.Window;
+import javafx.stage.WindowEvent;
 
 
 public class Shakkicontroller implements Initializable{
@@ -69,13 +73,25 @@ public class Shakkicontroller implements Initializable{
         fxChatbox.clear();
     }
 
+    //Pelin lopettamisen käsittely
+    @FXML void handleLopeta(){
+        System.out.println("lopetetaan client");
+
+            if(!isServer)asiakas.stopRunning();
+            if(isServer)palvelin.stopRunning();
+            fxChessgrid.getChildren().clear();
+            fxChatfield.appendText("Lopetetaan peli"+ "\n");
+
+    }
+
+
 
     public void alusta(){
 
         //TESTAUSTA VARTEN
-        IPString = "127.0.0.1";
-        PortString = "57";
-        localPort = "57";
+        //IPString = "127.0.0.1";
+        //PortString = "57";
+        localPort = "58";
 
 
         fxIP.textProperty().addListener((observable, f, newIP) -> {
@@ -89,6 +105,10 @@ public class Shakkicontroller implements Initializable{
         //TESTAUSTA VARTEN POISTETTU
 /*
         TextInputDialog f = new TextInputDialog("");
+        f.setResizable(true);
+        Platform.runLater(() -> {
+            f.setResizable(false);
+        });
         f.setTitle("Shakkipeli");
         f.setHeaderText("Portti, jonka avulla toinen pelaaja voi liittyä");
         Optional<String> result = f.showAndWait();
@@ -98,14 +118,20 @@ public class Shakkicontroller implements Initializable{
             localPort = name;
         });
 
+
  */
 
 
 
-        palvelin = new Server(Integer.parseInt(localPort), this);
-        //Thread p = new Thread(palvelin);
-        palvelin.start();
+        startServer();
         //kuuntele();
+
+
+
+    }
+    public void startServer(){
+        palvelin = new Server(Integer.parseInt(localPort), this);
+        palvelin.start();
     }
 
     public void aloitaPeli(String puoli){
@@ -172,12 +198,12 @@ public class Shakkicontroller implements Initializable{
                 //square.setStyle("-fx-background-color: "+BLACK+";");
 
                 GridPane.setConstraints(square, i,j);
-
                 //TOIMIVA
                 fxChessgrid.add(square, i, j);
 
                 square.widthProperty().bind(fxChessgrid.widthProperty().divide(8));
                 square.heightProperty().bind(fxChessgrid.heightProperty().divide(8));
+
             }
         }
     }
@@ -221,6 +247,7 @@ public class Shakkicontroller implements Initializable{
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         alusta();
-        //kuuntele();
+
     }
+
 }

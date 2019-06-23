@@ -16,10 +16,17 @@ public class Server extends Thread {
     public trafficOut t_out;
     private ObjectOutputStream out;
     private Shakkicontroller shc;
+    private boolean running = true;
 
     public Server(int port, Shakkicontroller shc){
         this.portti = port;
         this.shc = shc;
+    }
+    public void stopRunning(){
+        this.running = false;
+        t_in.stopRunning();
+        t_out.stopRunning();
+
     }
 
     public String getMessage(){
@@ -47,12 +54,6 @@ public class Server extends Thread {
 
      */
 
-
-
-    public void sendBits(byte i){
-        t_out.bitsOut(i);
-    }
-
     @Override
     public void run() {
         try {
@@ -62,7 +63,7 @@ public class Server extends Thread {
             Random random = new Random();
             puoli = side[random.nextInt(side.length)];
 
-            while(true) {
+            while(running) {
 
                 Socket sock = s.accept();
                 //System.out.println("soketti hyväksytty");
@@ -92,6 +93,7 @@ public class Server extends Thread {
         private Socket ssock;
         private ObjectInputStream in;
         public String vastaanotettu;
+        private boolean running = true;
 
         public String in(){
             try {
@@ -100,6 +102,17 @@ public class Server extends Thread {
                 e.printStackTrace();
             }
             return "ei viestiä";
+        }
+
+        public void stopRunning(){
+
+            try {
+                ssock.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            this.running = false;
+
         }
 
         public trafficIn(Socket client) {
@@ -117,11 +130,12 @@ public class Server extends Thread {
                 BufferedReader inp = new BufferedReader(new InputStreamReader(ssock.getInputStream()));
 
 
-            while(true){
+            while(running){
                 //System.out.println("trafficIn kuuntelusilmukka");
                 try{
                     System.out.println("yritetään lukea viestiä");
                     line = inp.readLine();
+                    if(line == null) break;
                     if(line.contains("@")){
                         shc.interpretMove(line);
                     }
@@ -173,9 +187,10 @@ public class Server extends Thread {
             }
         }
 
-        public void bitsOut(byte i){
+        public void stopRunning(){
             try {
-                out.write(i);
+                csock.close();
+                out.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }

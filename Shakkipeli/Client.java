@@ -13,21 +13,28 @@ public class Client extends Thread {
     public trafficIn t_in;
     public trafficOut t_out;
     public Shakkicontroller shc;
+    private boolean running = true;
 
     public Client(InetAddress ina, int portti, Shakkicontroller shc){
         this.ia = ina;
         this.port = portti;
         this.shc = shc;
     }
+    public void stopRunning(){
+        this.running = false;
+        t_in.stopRunning();
+        t_out.stopRunning();
+
+    }
 
     public void send(String message) {
 
-            t_out.out(message);
+            if(running)t_out.out(message);
 
     }
     public void sendMove(int x, int y, Piece pc){
         String pieceName = pc.getName();
-        t_out.out("@" + " " +x +" "+ y+" "+pieceName);
+        if(running)t_out.out("@" + " " +x +" "+ y+" "+pieceName);
     }
     /*
     public void sendMove(Point2D point, Piece pc){
@@ -56,10 +63,21 @@ public class Client extends Thread {
     private class trafficIn extends Thread{
         private Socket ssock;
         private String vastaanotettu;
+        private boolean running;
 
         public trafficIn(Socket client) {
             this.ssock = client;
             this.start();
+        }
+        public void stopRunning(){
+
+            try {
+                ssock.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            this.running = false;
+
         }
 
         public String in(){
@@ -71,7 +89,7 @@ public class Client extends Thread {
         public void run() {
             try {
                 BufferedReader inp = new BufferedReader(new InputStreamReader(ssock.getInputStream()));
-                while(true) {
+                while(running) {
                     vastaanotettu = inp.readLine();
                     System.out.println(vastaanotettu);
 
@@ -108,6 +126,16 @@ public class Client extends Thread {
         public trafficOut(Socket client) {
             this.csock = client;
             this.start();
+        }
+        public void stopRunning(){
+            try {
+                csock.close();
+                out.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
         }
 
         public void out(String msg){
