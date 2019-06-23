@@ -29,12 +29,12 @@ public class Client extends Thread {
 
     public void send(String message) {
 
-            if(running)t_out.out(message);
+            t_out.out(message);
 
     }
     public void sendMove(int x, int y, Piece pc){
         String pieceName = pc.getName();
-        if(running)t_out.out("@" + " " +x +" "+ y+" "+pieceName);
+        t_out.out("@" + " " +x +" "+ y+" "+pieceName);
     }
     /*
     public void sendMove(Point2D point, Piece pc){
@@ -89,7 +89,7 @@ public class Client extends Thread {
         public void run() {
             try {
                 BufferedReader inp = new BufferedReader(new InputStreamReader(ssock.getInputStream()));
-                while(running) {
+                while(true) {
                     vastaanotettu = inp.readLine();
                     System.out.println(vastaanotettu);
 

@@ -14,7 +14,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("mainview.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("mainview.fxml"));
         //        //final VBox box = (VBox)root.;
 
         Scene scene = new Scene(root, 800, 590);

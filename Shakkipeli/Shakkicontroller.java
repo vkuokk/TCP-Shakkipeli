@@ -91,7 +91,7 @@ public class Shakkicontroller implements Initializable{
         //TESTAUSTA VARTEN
         //IPString = "127.0.0.1";
         //PortString = "57";
-        localPort = "58";
+        localPort = "57";
 
 
         fxIP.textProperty().addListener((observable, f, newIP) -> {
