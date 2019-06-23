@@ -34,7 +34,7 @@ public class Client extends Thread {
     }
     public void sendMove(int x, int y, Piece pc){
         String pieceName = pc.getName();
-        if(running)t_out.out("@" + " " +x +" "+ y+" "+pieceName);
+        t_out.out("@" + " " +x +" "+ y+" "+pieceName);
     }
     /*
     public void sendMove(Point2D point, Piece pc){
@@ -63,7 +63,7 @@ public class Client extends Thread {
     private class trafficIn extends Thread{
         private Socket ssock;
         private String vastaanotettu;
-        private boolean running;
+        private boolean running = true;
 
         public trafficIn(Socket client) {
             this.ssock = client;
