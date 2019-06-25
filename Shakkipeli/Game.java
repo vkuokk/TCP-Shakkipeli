@@ -198,6 +198,7 @@ public class Game {
                         pcs[currentpiece.getY()][currentpiece.getX()] = null;
                         currentpiece.setX(p.getX());
                         currentpiece.setY(p.getY());
+                        currentpiece.setHasMoved();
                         cb.getChildren().remove(p);
 
 
@@ -257,6 +258,12 @@ public class Game {
                 currentpiece.setX(fX);
                 currentpiece.setY(fY);
                 currentpiece.setHasMoved();
+
+                //tornin siirto tornituksessa
+                //tornitus oikealle
+                if(currentpiece.getPieceType() == "king" && sd == 1 && X == 6 && Y == 7){
+                    
+                }
 
                 for(Rectangle re : possibilities){
                     re.setStrokeWidth(0);
@@ -757,6 +764,7 @@ public class Game {
                 break;
 
                 case "KING":{
+
                     int initialX = pc.getX();
                     int initialY = pc.getY();
                     //alas ylös ja sivuille
@@ -781,6 +789,26 @@ public class Game {
                     if(initialY <7 && initialX <7 && pcs[initialY+1][initialX+1] == null) available.add(rcts[initialY+1][initialX+1]);
                     if(initialY <7 && initialX >0 && pcs[initialY+1][initialX-1] == null) available.add(rcts[initialY+1][initialX-1]);
 
+                    //tornitus
+                    if(pc.gethasMoved()) break;
+                    Piece rightRook = pcs[7][7];
+                    Piece leftRook = pcs[7][0];
+                    boolean rightClear = true;
+                    boolean leftClear = true;
+
+                    if(!rightRook.gethasMoved()){
+                        for(int i = pc.getX()+1; i<7; i++){
+                            if(pcs[pc.getY()][i] != null) rightClear = false;
+                        }
+                        if(rightClear) available.add(rcts[7][pc.getX() +2]);
+                    }
+
+                    if(!leftRook.gethasMoved()){
+                        for(int i = pc.getX()-1; i>0; i--){
+                            if(pcs[pc.getY()][i] != null) leftClear = false;
+                        }
+                        if(leftClear) available.add(rcts[7][pc.getX() -2]);
+                    }
 
                 }
                 break;
