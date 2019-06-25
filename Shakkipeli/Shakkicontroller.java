@@ -103,7 +103,7 @@ public class Shakkicontroller implements Initializable{
         });
 
         //TESTAUSTA VARTEN POISTETTU
-/*
+
         TextInputDialog f = new TextInputDialog("");
         f.setResizable(true);
         Platform.runLater(() -> {
@@ -119,7 +119,7 @@ public class Shakkicontroller implements Initializable{
         });
 
 
- */
+
 
 
 

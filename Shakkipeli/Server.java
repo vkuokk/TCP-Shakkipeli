@@ -105,12 +105,13 @@ public class Server extends Thread {
         }
 
         public void stopRunning(){
-
+            t_out.out("Lopetti pelin");
             try {
                 ssock.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
             this.running = false;
 
         }
