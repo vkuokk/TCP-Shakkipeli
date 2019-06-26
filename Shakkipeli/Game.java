@@ -257,13 +257,56 @@ public class Game {
                 currentpiece.setTranslateY(r.localToParent(r.getX(), r.getY()).getY());
                 currentpiece.setX(fX);
                 currentpiece.setY(fY);
-                currentpiece.setHasMoved();
+
 
                 //tornin siirto tornituksessa
-                //tornitus oikealle
-                if(currentpiece.getPieceType() == "king" && sd == 1 && X == 6 && Y == 7){
-                    
+                //tornitus oikealle valkoisilla
+                if(currentpiece.getPieceType() == "king" && !currentpiece.gethasMoved() && X == 6 && Y == 7 && sd == 1){
+                    Piece wrrook = pcs[7][7];
+                    Rectangle wrcas = rcts[7][5];
+                    pcs[7][7] = null;
+                    pcs[7][5] = wrrook;
+                    wrrook.setTranslateX(wrcas.localToParent(wrcas.getX(), wrcas.getY()).getX());
+                    wrrook.setTranslateY(wrcas.localToParent(wrcas.getX(), wrcas.getY()).getY());
+                    wrrook.setX(5);
+                    wrrook.setY(7);
                 }
+                //tornitus oikealle mustalla
+                if(currentpiece.getPieceType() == "king" && !currentpiece.gethasMoved() && X ==5 && Y ==7 && sd == 0){
+                    Piece brrook = pcs[7][7];
+                    Rectangle brcas = rcts[7][4];
+                    pcs[7][7] = null;
+                    pcs[7][4] = brrook;
+                    brrook.setTranslateX(brcas.localToParent(brcas.getX(), brcas.getY()).getX());
+                    brrook.setTranslateY(brcas.localToParent(brcas.getX(), brcas.getY()).getY());
+                    brrook.setX(4);
+                    brrook.setY(7);
+                }
+                //tornitus vasemmalle mustalla
+                if(currentpiece.getPieceType() == "king" && !currentpiece.gethasMoved() && X == 1 && Y == 7 && sd == 0){
+                    Piece lrrook = pcs[7][0];
+                    Rectangle lrcas = rcts[7][2];
+                    pcs[7][0] = null;
+                    pcs[7][2] = lrrook;
+                    lrrook.setTranslateX(lrcas.localToParent(lrcas.getX(), lrcas.getY()).getX());
+                    lrrook.setTranslateY(lrcas.localToParent(lrcas.getX(), lrcas.getY()).getY());
+                    lrrook.setX(2);
+                    lrrook.setY(7);
+                }
+                //tornitus vasemmalle valkoisella
+                if(currentpiece.getPieceType() == "king" && !currentpiece.gethasMoved() && X == 2 && Y == 7 && sd == 1){
+                    Piece lwrook = pcs[7][0];
+                    Rectangle blcas = rcts[7][3];
+                    pcs[7][0] = null;
+                    pcs[7][3] = lwrook;
+                    lwrook.setTranslateX(blcas.localToParent(blcas.getX(), blcas.getY()).getX());
+                    lwrook.setTranslateY(blcas.localToParent(blcas.getX(), blcas.getY()).getY());
+                    lwrook.setX(3);
+                    lwrook.setY(7);
+
+                }
+
+                currentpiece.setHasMoved();
 
                 for(Rectangle re : possibilities){
                     re.setStrokeWidth(0);
@@ -326,6 +369,53 @@ public class Game {
         lastMoved = p;
         lastMoved.setHighlight();
 
+        //vastustajan tornitus vasemmalle valkoisilla
+        if(p.getPieceType() == "king" && !p.gethasMoved() && sd == 0 && xCoord == 1 && yCoord == 0 && !pcs[0][0].gethasMoved()){
+            Piece lwrook = pcs[0][0];
+            Rectangle lwr = rcts[0][2];
+            lwrook.setTranslateX(lwr.localToParent(lwr.getX(), lwr.getY()).getX());
+            lwrook.setTranslateY(lwr.localToParent(lwr.getX(), lwr.getY()).getY());
+            pcs[0][2] = lwrook;
+            pcs[0][0] = null;
+            lwrook.setX(2);
+            lwrook.setY(0);
+        }
+        //vastustajan tornitus oikealle valkoisilla
+        if(p.getPieceType() == "king" && !p.gethasMoved() && sd == 0 && xCoord == 5 && yCoord == 0 && !pcs[0][7].gethasMoved()){
+            Piece rwrook = pcs[0][7];
+            Rectangle rwr = rcts[0][4];
+            rwrook.setTranslateX(rwr.localToParent(rwr.getX(), rwr.getY()).getX());
+            rwrook.setTranslateY(rwr.localToParent(rwr.getX(), rwr.getY()).getY());
+            pcs[0][4] = rwrook;
+            pcs[0][7] = null;
+            rwrook.setX(4);
+            rwrook.setY(0);
+        }
+        //vastustajan tornitus vasemmalle mustalla
+        if(p.getPieceType() == "king" && !p.gethasMoved() && sd == 1 && xCoord == 2 && yCoord == 0 && !pcs[0][0].gethasMoved()){
+            Piece lbrook = pcs[0][0];
+            Rectangle lbr = rcts[0][3];
+            lbrook.setTranslateX(lbr.localToParent(lbr.getX(), lbr.getY()).getX());
+            lbrook.setTranslateY(lbr.localToParent(lbr.getX(), lbr.getY()).getY());
+            pcs[0][3] = lbrook;
+            pcs[0][0] = null;
+            lbrook.setX(3);
+            lbrook.setY(0);
+        }
+        //vastustajan tornitus oikealle mustalla
+        if(p.getPieceType() == "king" && !p.gethasMoved() && sd == 1 && xCoord == 6 && yCoord == 0 && !pcs[0][7].gethasMoved()){
+            Piece rbrook = pcs[0][7];
+            Rectangle rbr = rcts[0][5];
+            rbrook.setTranslateX(rbr.localToParent(rbr.getX(), rbr.getY()).getX());
+            rbrook.setTranslateY(rbr.localToParent(rbr.getX(), rbr.getY()).getY());
+            pcs[0][5] = rbrook;
+            pcs[0][7] = null;
+            rbrook.setX(5);
+            rbrook.setY(0);
+        }
+
+
+
         //if(rec.localToParent(rec.getX(),rec.getY()).getX() == xCoord)
         System.out.println("vastustajan lähettämät k. " + xCoord + " " +yCoord);
 
@@ -342,6 +432,7 @@ public class Game {
         pcs[yCoord][xCoord] = p;
         p.setX(xCoord);
         p.setY(yCoord);
+        p.setHasMoved();
 
     }
 
