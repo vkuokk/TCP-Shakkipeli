@@ -200,6 +200,11 @@ public class Game {
                         currentpiece.setY(p.getY());
                         currentpiece.setHasMoved();
                         cb.getChildren().remove(p);
+                        if(p.getPieceType() == "king"){
+                            Platform.runLater(()-> {
+                                shc.appendText("voitit pelin");
+                            });
+                        }
                         turn = false;
 
                         for(Rectangle re : possibilities){
@@ -425,7 +430,9 @@ public class Game {
             if(pi.getX() == xCoord && pi.getY() == yCoord && p != pi){
                 Platform.runLater(() -> {
                     cb.getChildren().remove(pi);
+                    if(pi.getPieceType() == "king") shc.appendText("Hävisit pelin");
                 });
+
             }
         }
 
