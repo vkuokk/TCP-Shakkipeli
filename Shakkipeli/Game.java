@@ -75,9 +75,9 @@ public class Game {
             }
 
 
-    }
+        }
 
-        turn = true;
+        if(sd == 1) turn = true;
 
         double cb_h = cb.getHeight();
         double space = cb_h / 16;
@@ -200,7 +200,7 @@ public class Game {
                         currentpiece.setY(p.getY());
                         currentpiece.setHasMoved();
                         cb.getChildren().remove(p);
-
+                        turn = false;
 
                         for(Rectangle re : possibilities){
                             re.setStrokeWidth(0);
@@ -316,6 +316,7 @@ public class Game {
                     //shc.sendMove(r.localToParent(r.getX(), r.getY()), currentpiece);
                     shc.sendMove(fX, fY, currentpiece);
                 });
+                turn = false;
                 //possibilities = new ArrayList<>();
             }
             else{
@@ -433,6 +434,7 @@ public class Game {
         p.setX(xCoord);
         p.setY(yCoord);
         p.setHasMoved();
+        turn = true;
 
     }
 
@@ -566,7 +568,6 @@ public class Game {
         bottomPieces[15] = bp8;
 
 
-
         for(int i =0; i<16; i++){
             setPieceListener(bottomPieces[i]);
             setPieceListener(topPieces[i]);
@@ -662,6 +663,7 @@ public class Game {
         String side = "";
         if(sd == 0) side = "b";
         if(sd == 1) side = "w";
+        if(!turn) return available;
         for( String s : pc.getMoves()){
             switch(s){
                 case "FORWARD": {
@@ -670,20 +672,12 @@ public class Game {
                     for (int i = initialY - 1; i > -1; i--) {
                         Piece inFront = pcs[i][initialX];
                         Rectangle next = rcts[i][initialX];
-                        if(inFront == null)available.add(next);
+                        if(inFront == null )available.add(next);
                         if(inFront != null && inFront.getName().startsWith(side)) break;
                         if (pc.getPieceType().equals("pawn")) {
                             if (pc.gethasMoved()) break;
                             if (i - initialY == -2) break;
                         }
-                        if(pc.getPieceType().equals("king")){
-                            if(inFront != null) {
-                                if (!inFront.getName().startsWith(side) && !available.contains(next))
-                                    available.add(next);
-                                break;
-                            }
-                            break;
-                            }
                         if(pc.getPieceType().equals("rook") || pc.getPieceType().equals("queen")){
                             if(inFront != null && !inFront.getName().startsWith(side)){
                                 available.add(next);
@@ -911,6 +905,33 @@ public class Game {
     }
 
 
+
+    //tarkistetaan, aiheuttaako oman nappulan siirtäminen shakin
+    public boolean causesCheck(Piece p, int tomoveY, int tomoveX){
+        //puolustaako siirrettävä nappula kuningasta jostain suunnista: diagonaalinen tai vaaka/pysty
+        String side ="";
+        if(sd == 0) side = "b";
+        if(sd == 1) side = "w";
+        Piece ownKing = pcs[0][0];
+
+        for(int i = 0; i<8; i++){
+            for(int j = 0; j<8; j++){
+                if(pcs[i][j] != null && pcs[i][j].getPieceType() == "king" && pcs[i][j].getName().startsWith(side)){
+                    ownKing = pcs[i][j];
+                }
+            }
+        }
+
+        //puolustaako yläpuolella
+        for(int y = ownKing.getY(); y>-1;y--){
+            Piece u = pcs[y][ownKing.getX()];
+            if(u!=null && (u.getPieceType() == "queen"|| u.getPieceType() == "rook") && p.getX() == ownKing.getX() && tomoveX != ownKing.getX()){
+                return true;
+            }
+        }
+
+        return false;
+    }
 }
 
 
