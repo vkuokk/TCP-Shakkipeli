@@ -51,14 +51,13 @@ public class Shakkicontroller implements Initializable{
 
         // Luo shakkinappulat
 
-
-
         try {
             asiakas = new Client(InetAddress.getByName(IPString), Integer.parseInt(PortString), this);
             System.out.println(InetAddress.getByName(IPString));
             //client.start();
         } catch (UnknownHostException e) {
             e.printStackTrace();
+            fxChatfield.appendText("IP-osoitteeseen ei voida liittyä" +"\n");
         }
         asiakas.start();
     }
@@ -91,7 +90,7 @@ public class Shakkicontroller implements Initializable{
         //TESTAUSTA VARTEN
         //IPString = "127.0.0.1";
         //PortString = "57";
-        localPort = "57";
+        //localPort = "58";
 
 
         fxIP.textProperty().addListener((observable, f, newIP) -> {
@@ -99,11 +98,13 @@ public class Shakkicontroller implements Initializable{
         });
 
         fxPortti.textProperty().addListener((observable, f, newPort) -> {
-            PortString = newPort;
+            if(newPort.matches("[0-9]+"))PortString = newPort;
+
         });
 
+
         //TESTAUSTA VARTEN POISTETTU
-/*
+
         TextInputDialog f = new TextInputDialog("");
         f.setResizable(true);
         Platform.runLater(() -> {
@@ -115,15 +116,20 @@ public class Shakkicontroller implements Initializable{
 
 
         result.ifPresent(name -> {
-            localPort = name;
+            if(name.matches("[0-9]+")){
+                localPort = name;
+                startServer();
+            }
+            else fxChatfield.appendText("Syötetty portti on virheellinen, käynnistä peli uudelleen jos haluat, että peliisi voidaan liittyä" + "\n");
         });
 
 
- */
 
 
 
-        startServer();
+
+
+
         //kuuntele();
 
 
