@@ -24,6 +24,7 @@ public class Game {
     private boolean turn = false;
     //@FXML
     //private Queen queen;
+    private Piece highlightable;
     private Piece currentpiece;
     private Piece lastMoved;
     private ArrayList<Piece> pieces = new ArrayList<>();
@@ -126,7 +127,7 @@ public class Game {
         p.setOnDragDetected(e -> {
             dragged = true;
             p.startFullDrag();
-            if(lastMoved !=null)lastMoved.removeHighlight();
+            //if(lastMoved !=null)lastMoved.removeHighlight();
             currentpiece = p;
             lastMoved = p;
             ArrayList<Rectangle> canBeMoved = getAvailable(currentpiece);
@@ -144,6 +145,7 @@ public class Game {
 
         });
         p.setOnMouseDragged(e -> {
+
             double offsetX = e.getSceneX() - mouseX;
             double offsetY = e.getSceneY() - mouseY;
 
@@ -158,7 +160,18 @@ public class Game {
         });
 
         p.setOnMouseDragReleased(e -> {
+            //if(lastMoved !=null)lastMoved.removeHighlight();
+            String side;
+            if(sd == 0) side = "b";
+            else side = "w";
             lastMoved = currentpiece;
+
+            if(currentpiece.getName().startsWith(side) && !p.getName().startsWith(side)) {
+                if(highlightable != null) highlightable.removeHighlight();
+                highlightable = p;
+                highlightable.setHighlight();
+            }
+
             if(turn) {
                 Platform.runLater(() -> {
                     Rectangle r = getRbyC(p.getTranslateX(),p.getTranslateY());
@@ -180,7 +193,7 @@ public class Game {
                         final int fY = Y;
                         shc.sendMove(fX, fY, currentpiece);
                         //shc.sendMove(new Point2D(p.getTranslateX(),p.getTranslateY()), currentpiece);
-                        lastMoved.setHighlight();
+                        //lastMoved.setHighlight();
                         /*
                         for(int i = 0; i<8; i++){
                             for(int j = 0; j<8; j++){
@@ -236,11 +249,10 @@ public class Game {
         r.setOnMouseDragReleased( e -> {
             //Oikea translate 0,0 ruudun suhteen:
 
-
-
             if(turn && possibilities.contains(r)) {
-
-                lastMoved.setHighlight();
+                //currentpiece.setHighlight();
+                //lastMoved.setHighlight();
+                if(highlightable != null)highlightable.removeHighlight();
                 int X = 0;
                 int Y = 0;
                 for(int i = 0; i<8;i++){
@@ -262,7 +274,8 @@ public class Game {
                 currentpiece.setTranslateY(r.localToParent(r.getX(), r.getY()).getY());
                 currentpiece.setX(fX);
                 currentpiece.setY(fY);
-
+                highlightable = currentpiece;
+                highlightable.setHighlight();
 
                 //tornin siirto tornituksessa
                 //tornitus oikealle valkoisilla
@@ -371,9 +384,12 @@ public class Game {
         Rectangle rec = rcts[yCoord][xCoord];
         p.setTranslateX(rec.localToParent(rec.getX(),rec.getY()).getX());
         p.setTranslateY(rec.localToParent(rec.getX(),rec.getY()).getY());
-        if(lastMoved != null)lastMoved.removeHighlight();
+        //if(lastMoved != null)lastMoved.removeHighlight();
         lastMoved = p;
-        lastMoved.setHighlight();
+        if(highlightable != null)highlightable.removeHighlight();
+        highlightable = p;
+        highlightable.setHighlight();
+        //lastMoved.setHighlight();
 
         //vastustajan tornitus vasemmalle valkoisilla
         if(p.getPieceType() == "king" && !p.gethasMoved() && sd == 0 && xCoord == 1 && yCoord == 0 && !pcs[0][0].gethasMoved()){
@@ -670,7 +686,8 @@ public class Game {
         String side = "";
         if(sd == 0) side = "b";
         if(sd == 1) side = "w";
-        if(!turn) return available;
+
+        if(!turn || !pc.getName().startsWith(side)) return available;
         for( String s : pc.getMoves()){
             switch(s){
                 case "FORWARD": {
@@ -882,20 +899,20 @@ public class Game {
                     if(initialY <7 && initialX >0 && pcs[initialY+1][initialX-1] == null) available.add(rcts[initialY+1][initialX-1]);
 
                     //tornitus
-                    if(pc.gethasMoved()) break;
+                    //if(pc.gethasMoved()) break;
                     Piece rightRook = pcs[7][7];
                     Piece leftRook = pcs[7][0];
                     boolean rightClear = true;
                     boolean leftClear = true;
 
-                    if(!rightRook.gethasMoved()){
+                    if(!pc.gethasMoved() && rightRook != null && !rightRook.gethasMoved()){
                         for(int i = pc.getX()+1; i<7; i++){
                             if(pcs[pc.getY()][i] != null) rightClear = false;
                         }
                         if(rightClear) available.add(rcts[7][pc.getX() +2]);
                     }
 
-                    if(!leftRook.gethasMoved()){
+                    if(!pc.gethasMoved() && leftRook != null && !leftRook.gethasMoved()){
                         for(int i = pc.getX()-1; i>0; i--){
                             if(pcs[pc.getY()][i] != null) leftClear = false;
                         }
