@@ -14,34 +14,34 @@
 
 <VBox prefHeight="579.0" prefWidth="800.0" scaleShape="false" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Shakkipeli.Shakkicontroller">
   <children>
-    <AnchorPane maxHeight="-1.0" maxWidth="-1.0" prefHeight="600.0" prefWidth="800.0" style="-fx-background-color: #fffaea;" VBox.vgrow="ALWAYS">
+    <AnchorPane maxHeight="-1.0" maxWidth="-1.0" prefHeight="600.0" prefWidth="800.0" style="-fx-background-color: #424242;" VBox.vgrow="ALWAYS">
          <children>
-          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="54.0" prefWidth="640.0" style="-fx-background-color: #969696;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="54.0" prefWidth="640.0" style="-fx-background-color: #212121;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
                <children>
-                  <TextField fx:id="fxIP" layoutX="24.0" layoutY="14.0" prefHeight="25.0" prefWidth="171.0">
+                  <TextField fx:id="fxIP" layoutX="24.0" layoutY="14.0" prefHeight="25.0" prefWidth="171.0" style="-fx-background-color: #e0e0e0;">
                      <effect>
                         <Blend />
                      </effect>
                   </TextField>
                   <TextFlow layoutX="205.0" layoutY="12.0" prefHeight="25.0" prefWidth="35.0">
                      <children>
-                        <Label prefHeight="23.0" prefWidth="38.0" text="IP" />
+                        <Label prefHeight="23.0" prefWidth="38.0" text="IP" textFill="#e0e0e0" />
                      </children>
                   </TextFlow>
-                  <TextField fx:id="fxPortti" layoutX="232.0" layoutY="14.0" prefHeight="25.0" prefWidth="52.0" />
-                  <Label layoutX="291.0" layoutY="18.0" text="Portti" />
-                  <Button fx:id="fxLiity" layoutX="522.0" layoutY="14.0" mnemonicParsing="false" onAction="#handleLiity" prefHeight="25.0" prefWidth="84.0" text="Liity" AnchorPane.rightAnchor="34.0" />
+                  <TextField fx:id="fxPortti" layoutX="232.0" layoutY="14.0" prefHeight="25.0" prefWidth="52.0" style="-fx-background-color: #e0e0e0;" />
+                  <Label layoutX="291.0" layoutY="18.0" text="Portti" textFill="#dedede" />
+                  <Button fx:id="fxLiity" layoutX="522.0" layoutY="14.0" mnemonicParsing="false" onAction="#handleLiity" prefHeight="25.0" prefWidth="84.0" style="-fx-background-color: #3e50b4;" text="Liity" textFill="WHITE" AnchorPane.rightAnchor="34.0" />
                </children>
             </AnchorPane>
             <AnchorPane layoutX="385.0" layoutY="78.0" maxHeight="1.7976931348623157E308" prefHeight="237.0" prefWidth="241.0" AnchorPane.bottomAnchor="85.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="78.0">
                <children>
-                  <TextArea fx:id="fxChatfield" prefHeight="188.0" prefWidth="231.0" AnchorPane.bottomAnchor="49.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="0.0" />
-                  <TextField fx:id="fxChatbox" layoutY="188.0" onAction="#handleChat" prefHeight="32.0" prefWidth="231.0" AnchorPane.bottomAnchor="17.0" AnchorPane.rightAnchor="10.0" />
+                  <TextArea fx:id="fxChatfield" editable="false" prefHeight="188.0" prefWidth="231.0" style="-: #000000;" AnchorPane.bottomAnchor="49.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="0.0" />
+                  <TextField fx:id="fxChatbox" layoutY="188.0" onAction="#handleChat" prefHeight="32.0" prefWidth="231.0" style="-fx-background-color: #E0E0E0;" AnchorPane.bottomAnchor="17.0" AnchorPane.rightAnchor="10.0" />
                </children>
             </AnchorPane>
             <AnchorPane layoutY="54.0" prefHeight="531.0" prefWidth="531.0" style="-fx-background-size: cover;" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="54.0">
                <children>
-                  <GridPane fx:id="fxChessgrid" prefHeight="531.0" prefWidth="531.0" scaleShape="false" style="-fx-background-color: #e2e2e2;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <GridPane fx:id="fxChessgrid" prefHeight="531.0" prefWidth="531.0" scaleShape="false" style="-fx-background-color: #303030;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <columnConstraints>
                       <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                       <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -65,7 +65,7 @@
                   </GridPane>
                </children>
             </AnchorPane>
-            <Button fx:id="fxLopeta" layoutX="694.0" layoutY="500.0" mnemonicParsing="false" onAction="#handleLopeta" prefHeight="25.0" prefWidth="84.0" text="Lopeta peli" />
+            <Button fx:id="fxLopeta" layoutX="694.0" layoutY="500.0" mnemonicParsing="false" onAction="#handleLopeta" prefHeight="25.0" prefWidth="84.0" style="-fx-background-color: #ff3f80;" text="Lopeta peli" textFill="WHITE" />
          </children>
     </AnchorPane>
   </children>
