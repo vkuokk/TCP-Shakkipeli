@@ -24,6 +24,7 @@ public class Game {
     private boolean turn = false;
     //@FXML
     //private Queen queen;
+    private Piece highlightable;
     private Piece currentpiece;
     private Piece lastMoved;
     private ArrayList<Piece> pieces = new ArrayList<>();
@@ -62,7 +63,9 @@ public class Game {
 
 
         //Lisätään nappulat pelilaudalle puolen mukaan 0 = musta, 1 = valkoinen
-        spawnPieces(sd ,size);
+        Platform.runLater(()->{
+            spawnPieces(sd ,size);
+        });
 
         for(int i = 0; i<8; i++){
             for(int j = 0; j<8; j++){
@@ -75,9 +78,9 @@ public class Game {
             }
 
 
-    }
+        }
 
-        turn = true;
+        if(sd == 1) turn = true;
 
         double cb_h = cb.getHeight();
         double space = cb_h / 16;
@@ -126,7 +129,7 @@ public class Game {
         p.setOnDragDetected(e -> {
             dragged = true;
             p.startFullDrag();
-            if(lastMoved !=null)lastMoved.removeHighlight();
+            //if(lastMoved !=null)lastMoved.removeHighlight();
             currentpiece = p;
             lastMoved = p;
             ArrayList<Rectangle> canBeMoved = getAvailable(currentpiece);
@@ -144,6 +147,7 @@ public class Game {
 
         });
         p.setOnMouseDragged(e -> {
+
             double offsetX = e.getSceneX() - mouseX;
             double offsetY = e.getSceneY() - mouseY;
 
@@ -158,7 +162,20 @@ public class Game {
         });
 
         p.setOnMouseDragReleased(e -> {
+            //if(lastMoved !=null)lastMoved.removeHighlight();
+            String side;
+            if(sd == 0) side = "b";
+            else side = "w";
             lastMoved = currentpiece;
+
+            //Tarkistetaan onko nappula, jonka päälle siirretään toinen, laillinen siirto, jotta highlight toimii oikein
+            if(possibilities.contains(rcts[p.getX()][p.getY()]) && currentpiece.getName().startsWith(side) && !p.getName().startsWith(side)) {
+
+                if(highlightable != null) highlightable.removeHighlight();
+                highlightable = currentpiece;
+                highlightable.setHighlight();
+            }
+
             if(turn) {
                 Platform.runLater(() -> {
                     Rectangle r = getRbyC(p.getTranslateX(),p.getTranslateY());
@@ -179,28 +196,19 @@ public class Game {
                         final int fX = X;
                         final int fY = Y;
                         shc.sendMove(fX, fY, currentpiece);
-                        //shc.sendMove(new Point2D(p.getTranslateX(),p.getTranslateY()), currentpiece);
-                        lastMoved.setHighlight();
-                        /*
-                        for(int i = 0; i<8; i++){
-                            for(int j = 0; j<8; j++){
-                                if(pcs[i][j] != null && pcs[i][j].getName().equals(p.getName())){
-                                    pcs[i][j] = currentpiece;
-                                    currentpiece.setX(i);
-                                    currentpiece.setY(j);
 
-                                }
-
-                            }
-                        }
-                         */
                         pcs[p.getY()][p.getX()] = currentpiece;
                         pcs[currentpiece.getY()][currentpiece.getX()] = null;
                         currentpiece.setX(p.getX());
                         currentpiece.setY(p.getY());
                         currentpiece.setHasMoved();
                         cb.getChildren().remove(p);
-
+                        if(p.getPieceType() == "king"){
+                            Platform.runLater(()-> {
+                                shc.appendInfo("voitit pelin");
+                            });
+                        }
+                        turn = false;
 
                         for(Rectangle re : possibilities){
                             re.setStrokeWidth(0);
@@ -231,11 +239,10 @@ public class Game {
         r.setOnMouseDragReleased( e -> {
             //Oikea translate 0,0 ruudun suhteen:
 
-
-
             if(turn && possibilities.contains(r)) {
-
-                lastMoved.setHighlight();
+                //currentpiece.setHighlight();
+                //lastMoved.setHighlight();
+                if(highlightable != null)highlightable.removeHighlight();
                 int X = 0;
                 int Y = 0;
                 for(int i = 0; i<8;i++){
@@ -257,7 +264,8 @@ public class Game {
                 currentpiece.setTranslateY(r.localToParent(r.getX(), r.getY()).getY());
                 currentpiece.setX(fX);
                 currentpiece.setY(fY);
-
+                highlightable = currentpiece;
+                highlightable.setHighlight();
 
                 //tornin siirto tornituksessa
                 //tornitus oikealle valkoisilla
@@ -316,6 +324,7 @@ public class Game {
                     //shc.sendMove(r.localToParent(r.getX(), r.getY()), currentpiece);
                     shc.sendMove(fX, fY, currentpiece);
                 });
+                turn = false;
                 //possibilities = new ArrayList<>();
             }
             else{
@@ -365,9 +374,12 @@ public class Game {
         Rectangle rec = rcts[yCoord][xCoord];
         p.setTranslateX(rec.localToParent(rec.getX(),rec.getY()).getX());
         p.setTranslateY(rec.localToParent(rec.getX(),rec.getY()).getY());
-        if(lastMoved != null)lastMoved.removeHighlight();
+        //if(lastMoved != null)lastMoved.removeHighlight();
         lastMoved = p;
-        lastMoved.setHighlight();
+        if(highlightable != null)highlightable.removeHighlight();
+        highlightable = p;
+        highlightable.setHighlight();
+        //lastMoved.setHighlight();
 
         //vastustajan tornitus vasemmalle valkoisilla
         if(p.getPieceType() == "king" && !p.gethasMoved() && sd == 0 && xCoord == 1 && yCoord == 0 && !pcs[0][0].gethasMoved()){
@@ -424,7 +436,9 @@ public class Game {
             if(pi.getX() == xCoord && pi.getY() == yCoord && p != pi){
                 Platform.runLater(() -> {
                     cb.getChildren().remove(pi);
+                    if(pi.getPieceType() == "king") shc.appendText("Hävisit pelin");
                 });
+
             }
         }
 
@@ -433,6 +447,7 @@ public class Game {
         p.setX(xCoord);
         p.setY(yCoord);
         p.setHasMoved();
+        turn = true;
 
     }
 
@@ -566,7 +581,6 @@ public class Game {
         bottomPieces[15] = bp8;
 
 
-
         for(int i =0; i<16; i++){
             setPieceListener(bottomPieces[i]);
             setPieceListener(topPieces[i]);
@@ -662,6 +676,8 @@ public class Game {
         String side = "";
         if(sd == 0) side = "b";
         if(sd == 1) side = "w";
+
+        if(!turn || !pc.getName().startsWith(side)) return available;
         for( String s : pc.getMoves()){
             switch(s){
                 case "FORWARD": {
@@ -670,20 +686,12 @@ public class Game {
                     for (int i = initialY - 1; i > -1; i--) {
                         Piece inFront = pcs[i][initialX];
                         Rectangle next = rcts[i][initialX];
-                        if(inFront == null)available.add(next);
+                        if(inFront == null )available.add(next);
                         if(inFront != null && inFront.getName().startsWith(side)) break;
                         if (pc.getPieceType().equals("pawn")) {
                             if (pc.gethasMoved()) break;
                             if (i - initialY == -2) break;
                         }
-                        if(pc.getPieceType().equals("king")){
-                            if(inFront != null) {
-                                if (!inFront.getName().startsWith(side) && !available.contains(next))
-                                    available.add(next);
-                                break;
-                            }
-                            break;
-                            }
                         if(pc.getPieceType().equals("rook") || pc.getPieceType().equals("queen")){
                             if(inFront != null && !inFront.getName().startsWith(side)){
                                 available.add(next);
@@ -881,20 +889,20 @@ public class Game {
                     if(initialY <7 && initialX >0 && pcs[initialY+1][initialX-1] == null) available.add(rcts[initialY+1][initialX-1]);
 
                     //tornitus
-                    if(pc.gethasMoved()) break;
+                    //if(pc.gethasMoved()) break;
                     Piece rightRook = pcs[7][7];
                     Piece leftRook = pcs[7][0];
                     boolean rightClear = true;
                     boolean leftClear = true;
 
-                    if(!rightRook.gethasMoved()){
+                    if(!pc.gethasMoved() && rightRook != null && !rightRook.gethasMoved()){
                         for(int i = pc.getX()+1; i<7; i++){
                             if(pcs[pc.getY()][i] != null) rightClear = false;
                         }
                         if(rightClear) available.add(rcts[7][pc.getX() +2]);
                     }
 
-                    if(!leftRook.gethasMoved()){
+                    if(!pc.gethasMoved() && leftRook != null && !leftRook.gethasMoved()){
                         for(int i = pc.getX()-1; i>0; i--){
                             if(pcs[pc.getY()][i] != null) leftClear = false;
                         }
@@ -911,6 +919,33 @@ public class Game {
     }
 
 
+
+    //tarkistetaan, aiheuttaako oman nappulan siirtäminen shakin
+    public boolean causesCheck(Piece p, int tomoveY, int tomoveX){
+        //puolustaako siirrettävä nappula kuningasta jostain suunnista: diagonaalinen tai vaaka/pysty
+        String side ="";
+        if(sd == 0) side = "b";
+        if(sd == 1) side = "w";
+        Piece ownKing = pcs[0][0];
+
+        for(int i = 0; i<8; i++){
+            for(int j = 0; j<8; j++){
+                if(pcs[i][j] != null && pcs[i][j].getPieceType() == "king" && pcs[i][j].getName().startsWith(side)){
+                    ownKing = pcs[i][j];
+                }
+            }
+        }
+
+        //puolustaako yläpuolella
+        for(int y = ownKing.getY(); y>-1;y--){
+            Piece u = pcs[y][ownKing.getX()];
+            if(u!=null && (u.getPieceType() == "queen"|| u.getPieceType() == "rook") && p.getX() == ownKing.getX() && tomoveX != ownKing.getX()){
+                return true;
+            }
+        }
+
+        return false;
+    }
 }
 
 

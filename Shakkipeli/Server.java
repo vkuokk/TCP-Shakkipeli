@@ -14,7 +14,6 @@ public class Server extends Thread {
     public int portti;
     public trafficIn t_in;
     public trafficOut t_out;
-    private ObjectOutputStream out;
     private Shakkicontroller shc;
     private boolean running = true;
 
@@ -22,8 +21,9 @@ public class Server extends Thread {
         this.portti = port;
         this.shc = shc;
     }
-    public void stopRunning(){
-        this.running = false;
+    public
+    void stopRunning(){
+        //this.running = false;
         t_in.stopRunning();
         t_out.stopRunning();
 
@@ -69,6 +69,7 @@ public class Server extends Thread {
                 //System.out.println("soketti hyväksytty");
                 //shc.setPuoli(puoli);
                 shc.getFxChatfield().appendText("Pelaaja liittyi osoittesta "+ sock.getInetAddress().toString() + "\n");
+
                 t_in = new trafficIn(sock);
                 t_in.start();
                 //uutta
@@ -105,13 +106,14 @@ public class Server extends Thread {
         }
 
         public void stopRunning(){
-
+            t_out.out("Lopetti pelin");
             try {
                 ssock.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            this.running = false;
+
+            //this.running = false;
 
         }
 
@@ -127,7 +129,7 @@ public class Server extends Thread {
 
             try{
 
-                BufferedReader inp = new BufferedReader(new InputStreamReader(ssock.getInputStream()));
+                BufferedReader inp = new BufferedReader(new InputStreamReader(ssock.getInputStream(), "UTF-8"));
 
 
             while(running){
