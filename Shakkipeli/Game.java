@@ -63,7 +63,9 @@ public class Game {
 
 
         //Lisätään nappulat pelilaudalle puolen mukaan 0 = musta, 1 = valkoinen
-        spawnPieces(sd ,size);
+        Platform.runLater(()->{
+            spawnPieces(sd ,size);
+        });
 
         for(int i = 0; i<8; i++){
             for(int j = 0; j<8; j++){
@@ -166,9 +168,11 @@ public class Game {
             else side = "w";
             lastMoved = currentpiece;
 
-            if(currentpiece.getName().startsWith(side) && !p.getName().startsWith(side)) {
+            //Tarkistetaan onko nappula, jonka päälle siirretään toinen, laillinen siirto, jotta highlight toimii oikein
+            if(possibilities.contains(rcts[p.getX()][p.getY()]) && currentpiece.getName().startsWith(side) && !p.getName().startsWith(side)) {
+
                 if(highlightable != null) highlightable.removeHighlight();
-                highlightable = p;
+                highlightable = currentpiece;
                 highlightable.setHighlight();
             }
 
@@ -192,21 +196,7 @@ public class Game {
                         final int fX = X;
                         final int fY = Y;
                         shc.sendMove(fX, fY, currentpiece);
-                        //shc.sendMove(new Point2D(p.getTranslateX(),p.getTranslateY()), currentpiece);
-                        //lastMoved.setHighlight();
-                        /*
-                        for(int i = 0; i<8; i++){
-                            for(int j = 0; j<8; j++){
-                                if(pcs[i][j] != null && pcs[i][j].getName().equals(p.getName())){
-                                    pcs[i][j] = currentpiece;
-                                    currentpiece.setX(i);
-                                    currentpiece.setY(j);
 
-                                }
-
-                            }
-                        }
-                         */
                         pcs[p.getY()][p.getX()] = currentpiece;
                         pcs[currentpiece.getY()][currentpiece.getX()] = null;
                         currentpiece.setX(p.getX());
@@ -215,7 +205,7 @@ public class Game {
                         cb.getChildren().remove(p);
                         if(p.getPieceType() == "king"){
                             Platform.runLater(()-> {
-                                shc.appendText("voitit pelin");
+                                shc.appendInfo("voitit pelin");
                             });
                         }
                         turn = false;

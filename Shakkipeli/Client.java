@@ -88,21 +88,27 @@ public class Client extends Thread {
         @Override
         public void run() {
             try {
-                BufferedReader inp = new BufferedReader(new InputStreamReader(ssock.getInputStream()));
+                BufferedReader inp = new BufferedReader(new InputStreamReader(ssock.getInputStream(),"UTF-8"));
                 while(running) {
                     vastaanotettu = inp.readLine();
-                    System.out.println(vastaanotettu);
-
+                    //System.out.println(vastaanotettu);
+                    if(vastaanotettu == null) {
+                        Platform.runLater(()->{
+                            shc.appendInfo("Vastustaja sulki pelin");
+                        });
+                        this.stopRunning();
+                        break;
+                    }
 
                     if(vastaanotettu.contains("//0")){
                         Platform.runLater(()-> {
-                            shc.appendText("Liityit onnistuneesti peliin " + ssock.getInetAddress().toString() );
+                            shc.appendInfo("Liityit onnistuneesti peliin " + ssock.getInetAddress().toString() );
                             shc.aloitaPeli("musta");
                         });
                     }
                     if(vastaanotettu.contains("//1")){
                         Platform.runLater(()-> {
-                            shc.appendText("Liityit onnistuneesti peliin " + ssock.getInetAddress().toString() );
+                            shc.appendInfo("Liityit onnistuneesti peliin " + ssock.getInetAddress().toString() );
                             shc.aloitaPeli("valkoinen");
                         });
                     }
@@ -115,7 +121,8 @@ public class Client extends Thread {
                     }
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                //e.printStackTrace();
+                this.stopRunning();
             }
         }
     }
@@ -145,7 +152,8 @@ public class Client extends Thread {
                 out.flush();
 
             } catch (IOException e) {
-                e.printStackTrace();
+                //e.printStackTrace();
+                this.stopRunning();
             }
         }
 
@@ -157,7 +165,8 @@ public class Client extends Thread {
                 out = new DataOutputStream(csock.getOutputStream());
 
             } catch (IOException e) {
-                e.printStackTrace();
+                //e.printStackTrace();
+                this.stopRunning();
             }
         }
     }

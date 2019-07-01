@@ -10,11 +10,13 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
+import java.io.UnsupportedEncodingException;
 import java.net.*;
 import java.util.ResourceBundle;
 import java.util.Optional;
 
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.shape.StrokeType;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.stage.WindowEvent;
@@ -178,6 +180,11 @@ public class Shakkicontroller implements Initializable{
             else fxChatfield.appendText("musta: " + text + "\n");
         });
     }
+    public void appendInfo(String text){
+        Platform.runLater(()-> {
+            fxChatfield.appendText(text + "\n");
+        });
+    }
 
 
 
@@ -195,13 +202,21 @@ public class Shakkicontroller implements Initializable{
                 Rectangle square = new Rectangle();
                 Color color;
                 if ((i+j) %2 == 0) {
-                    color = Color.rgb(242, 237, 225);
+                    color = Color.valueOf("#eeeeee");
+                    //color = Color.rgb(242, 237, 225);
                 } else {
-                    color = Color.rgb(114, 175, 161);
+                    color = Color.valueOf("#82747e");
+                    //color = Color.rgb(114, 175, 161);
                 }
 
                 square.setFill(color);
+                /*
+                square.setStrokeType(StrokeType.INSIDE);
+                square.setStrokeWidth(1);
+                square.setStroke(Color.GREY);
                 //square.setStyle("-fx-background-color: "+BLACK+";");
+
+                 */
 
                 GridPane.setConstraints(square, i,j);
                 //TOIMIVA
