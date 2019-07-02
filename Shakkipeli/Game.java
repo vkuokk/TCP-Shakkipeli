@@ -169,7 +169,7 @@ public class Game {
             lastMoved = currentpiece;
 
             //Tarkistetaan onko nappula, jonka päälle siirretään toinen, laillinen siirto, jotta highlight toimii oikein
-            if(possibilities.contains(rcts[p.getX()][p.getY()]) && currentpiece.getName().startsWith(side) && !p.getName().startsWith(side)) {
+            if(possibilities.contains(rcts[p.getY()][p.getX()]) && currentpiece.getName().startsWith(side) && !p.getName().startsWith(side)) {
 
                 if(highlightable != null) highlightable.removeHighlight();
                 highlightable = currentpiece;
@@ -788,7 +788,7 @@ public class Game {
                         if(pcs[initialY -2][initialX +1] != null && !pcs[initialY-2][initialX+1].getName().startsWith(side)) available.add(rcts[initialY-2][initialX+1]);
                         if(pcs[initialY -2][initialX +1] == null) available.add(rcts[initialY-2][initialX+1]);
                     }
-                    if (initialX <5 && initialY >0){
+                    if (initialX <6 && initialY >0){
                         if(pcs[initialY -1][initialX +2] != null && !pcs[initialY-1][initialX+2].getName().startsWith(side)) available.add(rcts[initialY-1][initialX+2]);
                         if(pcs[initialY -1][initialX +2] == null) available.add(rcts[initialY-1][initialX+2]);
                     }
@@ -803,16 +803,14 @@ public class Game {
                         if(pcs[initialY +2][initialX -1 ] == null) available.add(rcts[initialY+2][initialX-1]);
                     }
 
-                    if (initialX <7 && initialY < 5){
+                    if (initialX <7 && initialY < 6){
                         if(pcs[initialY + 2][initialX +1] != null && !pcs[initialY+2][initialX+1].getName().startsWith(side)) available.add(rcts[initialY+2][initialX+1]);
                         if(pcs[initialY +2][initialX +1 ] == null) available.add(rcts[initialY+2][initialX+1]);
                     }
-                    if (initialX <5 && initialY < 7){
+                    if (initialX <6 && initialY < 7){
                         if(pcs[initialY + 1][initialX +2] != null && !pcs[initialY+1][initialX+2].getName().startsWith(side)) available.add(rcts[initialY+1][initialX+2]);
                         if(pcs[initialY +1][initialX +2 ] == null) available.add(rcts[initialY+1][initialX+2]);
                     }
-
-
                 }
                 break;
 
