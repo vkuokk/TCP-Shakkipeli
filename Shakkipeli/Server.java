@@ -2,13 +2,15 @@ package Shakkipeli;
 
 
 import javafx.application.Platform;
-import javafx.beans.Observable;
-import javafx.geometry.Point2D;
-
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Random;
+
+// Ville Kuokkanen 2.7.2019
+// Server -luokka on palvelinta, eli pelin toista osapuolta varten oleva osa. Ohjelmaa avatessa käyttäjältä kysytään portti, johon
+// avataan palvelinsoketti, joka mahdollistaa pelaajan liittymisen peliin
+// Kuten Client, myös Server avaa lisäksi uudet säikeet sisäänpäin ja ulospäin menevälle liikenteelle.
 
 public class Server extends Thread {
     public int portti;
@@ -23,14 +25,9 @@ public class Server extends Thread {
     }
     public
     void stopRunning(){
-        //this.running = false;
         t_in.stopRunning();
         t_out.stopRunning();
 
-    }
-
-    public String getMessage(){
-        return t_in.in();
     }
 
 
@@ -43,16 +40,6 @@ public class Server extends Thread {
         String pieceName = pc.getName();
         t_out.out("@" + " " +x +" "+ y+" "+pieceName);
     }
-    /*
-    public void sendMove(Point2D point, Piece pc){
-        double toX = point.getX();
-        double toY = point.getY();
-        String pieceName = pc.getName();
-
-        t_out.out("@" +" "+toX +" " + toY + " " + " " + pieceName);
-    }
-
-     */
 
     @Override
     public void run() {
@@ -66,16 +53,12 @@ public class Server extends Thread {
             while(running) {
 
                 Socket sock = s.accept();
-                //System.out.println("soketti hyväksytty");
-                //shc.setPuoli(puoli);
                 shc.getFxChatfield().appendText("Pelaaja liittyi osoittesta "+ sock.getInetAddress().toString() + "\n");
 
                 t_in = new trafficIn(sock);
                 t_in.start();
-                //uutta
                 t_out = new trafficOut(sock);
                 t_out.start();
-                //luodaan peli
 
                 Platform.runLater(()-> {
                     shc.aloitaPeli(puoli);
@@ -92,18 +75,9 @@ public class Server extends Thread {
 
     private class trafficIn extends Thread{
         private Socket ssock;
-        private ObjectInputStream in;
-        public String vastaanotettu;
         private boolean running = true;
 
-        public String in(){
-            try {
-                return in.readUTF();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return "ei viestiä";
-        }
+
 
         public void stopRunning(){
             t_out.out("Lopetti pelin");
@@ -113,13 +87,10 @@ public class Server extends Thread {
                 e.printStackTrace();
             }
 
-            //this.running = false;
-
         }
 
         public trafficIn(Socket client) {
             this.ssock = client;
-            //this.run();
         }
 
         @Override
@@ -133,7 +104,6 @@ public class Server extends Thread {
 
 
             while(running){
-                //System.out.println("trafficIn kuuntelusilmukka");
                 try{
                     System.out.println("yritetään lukea viestiä");
                     line = inp.readLine();
@@ -142,9 +112,6 @@ public class Server extends Thread {
                         shc.interpretMove(line);
                     }
                     if(!line.contains("@") && line.length() > 2) shc.appendText(line);
-                    //shc.getFxChatfield().appendText(line + "\n");
-                    //if(line!=null)System.out.println(line);
-                    //line = inp.readLine();
                     System.out.println(line);
 
                 }catch (IOException e){
@@ -173,16 +140,11 @@ public class Server extends Thread {
 
         public trafficOut(Socket client) {
             this.csock = client;
-            //this.start();
         }
 
         public void out(String msg){
-
-
             try {
-                //out.writeChars(msg +"\n");
                 out.writeUTF(msg + "\n");
-
                 out.flush();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -202,8 +164,6 @@ public class Server extends Thread {
         public void run() {
             try {
                  out = new DataOutputStream(csock.getOutputStream());
-
-
             } catch (IOException e) {
                 e.printStackTrace();
             }

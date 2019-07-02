@@ -14,6 +14,16 @@ import javafx.scene.shape.StrokeType;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 
+// Ville Kuokkanen 2.7.2019
+// Game-luokassa tapahtuu kaikki itse shakkiin liittyvä mm. nappuloiden alustus, nappuloiden siirrot ja niiden oikeellisuuden tarkistus.
+// Peli toimii ohestalyöntiä ja itse shakki-tilannetta lukuunottamatta täysin shakin sääntöjen mukaisesti.
+// Peli toimii niin, että ruudut ja nappulat ovat omissa 2-ulotteisissa taulukoissaan, jotka päivittyvät pelin siirtojen mukaisesti
+// niin, että esim. pcs -taulukossa on aina ajantasainen tilanne nappuloista pelilaudalla
+// Tässä käsitellään myös edellisen siirron korostaminen ja lisätään kuuntelijat kaikille shakkilaudan ruuduille ja nappuloille, jotta
+// pelin tapahtumia voidaan käsitellä.
+// Itse tehty siirto tarkastetaan jo ennen siirron suorittamista, jonka jälkeen siirto lähetetään Shakkicontrollerille, joka muuttaa
+// koordinaatit siten, että siirretty nappula asettuu oikein vastustajan pelilaudalle
+
 public class Game {
 
     private double moveStartx;
@@ -22,16 +32,12 @@ public class Game {
     private int sd;
     private boolean dragged = false;
     private boolean turn = false;
-    //@FXML
-    //private Queen queen;
     private Piece highlightable;
     private Piece currentpiece;
-    private Piece lastMoved;
     private ArrayList<Piece> pieces = new ArrayList<>();
     private ArrayList<Rectangle> possibilities = new ArrayList<>();
     private Shakkicontroller shc;
 
-    int[][] spaces = new int[8][8];
     Rectangle[][] rcts = new Rectangle[8][8];
     Piece[][] pcs = new Piece[8][8];
     //
@@ -52,16 +58,9 @@ public class Game {
     //Luodaan nappulat pelilaudalle
     public void spawn() {
 
-
-
         int size = cb.heightProperty().intValue() / 8;
-        //cb.setGridLinesVisible(true);
         cb.getColumnConstraints().add(new ColumnConstraints(0));
         cb.getRowConstraints().add(new RowConstraints(0));
-
-
-
-
         //Lisätään nappulat pelilaudalle puolen mukaan 0 = musta, 1 = valkoinen
         Platform.runLater(()->{
             spawnPieces(sd ,size);
@@ -70,20 +69,11 @@ public class Game {
         for(int i = 0; i<8; i++){
             for(int j = 0; j<8; j++){
                 Rectangle r = (Rectangle)cb.getChildren().get(i*8+j);
-                //rct[i*j] = r;
-                //r.setFill(Color.BLACK);
-                //rectangles.add(r);
                 setListener(r);
-
             }
-
-
         }
 
         if(sd == 1) turn = true;
-
-        double cb_h = cb.getHeight();
-        double space = cb_h / 16;
 
 
     }
@@ -112,13 +102,11 @@ public class Game {
                 p.setTranslateX(moveStartx);
                 p.setTranslateY(moveStarty);
             }
-            //System.out.println("Nappulan koordinaatit: " + p.getTranslateX() + " " +p.getTranslateY());
-            //System.out.println(b);
             if(p.getTranslateX() < -1 || p.getTranslateX() > 500 || p.getTranslateY() < -1 || p.getTranslateY() > 500){
                 p.setTranslateX(moveStartx);
                 p.setTranslateY(moveStarty);
             }
-            Double d = cb.getMinHeight();
+
             for(Rectangle re : possibilities){
                 re.setStrokeWidth(0);
             }
@@ -129,9 +117,7 @@ public class Game {
         p.setOnDragDetected(e -> {
             dragged = true;
             p.startFullDrag();
-            //if(lastMoved !=null)lastMoved.removeHighlight();
             currentpiece = p;
-            lastMoved = p;
             ArrayList<Rectangle> canBeMoved = getAvailable(currentpiece);
             possibilities = canBeMoved;
             for(Rectangle r : possibilities){
@@ -162,11 +148,9 @@ public class Game {
         });
 
         p.setOnMouseDragReleased(e -> {
-            //if(lastMoved !=null)lastMoved.removeHighlight();
             String side;
             if(sd == 0) side = "b";
             else side = "w";
-            lastMoved = currentpiece;
 
             //Tarkistetaan onko nappula, jonka päälle siirretään toinen, laillinen siirto, jotta highlight toimii oikein
             if(possibilities.contains(rcts[p.getY()][p.getX()]) && currentpiece.getName().startsWith(side) && !p.getName().startsWith(side)) {
@@ -219,12 +203,6 @@ public class Game {
                     }
                 });
             }
-
-            /*lastMoved.setHighlight();
-              cb.getChildren().remove(p);
-
-             */
-
         });
     }
 
@@ -233,15 +211,8 @@ public class Game {
     //Asetetaan kuuntelijat kaikille gridpane(cb):ssa oleville neliöille
     //ja hiiren ollessa sen kohdalla tiputetaan valittu nappula siihen
     public void setListener(Rectangle r) {
-        r.setOnMouseDragOver(e -> {
-            //System.out.println("hiiri laatikon yläpuolella");
-        });
         r.setOnMouseDragReleased( e -> {
-            //Oikea translate 0,0 ruudun suhteen:
-
             if(turn && possibilities.contains(r)) {
-                //currentpiece.setHighlight();
-                //lastMoved.setHighlight();
                 if(highlightable != null)highlightable.removeHighlight();
                 int X = 0;
                 int Y = 0;
@@ -321,29 +292,20 @@ public class Game {
                 }
 
                 Platform.runLater(() -> {
-                    //shc.sendMove(r.localToParent(r.getX(), r.getY()), currentpiece);
                     shc.sendMove(fX, fY, currentpiece);
                 });
                 turn = false;
-                //possibilities = new ArrayList<>();
             }
             else{
                 currentpiece.setTranslateX(moveStartx);
                 currentpiece.setTranslateY(moveStarty);
             }
-            //System.out.println("uudet koordinaatit " + r.localToParent(r.getX(),r.getY()).getX() +"   " +r.localToParent(r.getX(),r.getY()).getY());
-
-
         });
     }
 
     //Alustetaan nappulat oikeille paikoilleen
     public void move(Piece p, Rectangle r ){
 
-        //System.out.println("alustetaan");
-
-        Bounds b = r.getBoundsInParent();
-        //System.out.println(b);
 
         p.setTranslateX(r.localToParent(r.getX(),r.getY()).getX());
         p.setTranslateY(r.localToParent(r.getX(),r.getY()).getY());
@@ -361,25 +323,16 @@ public class Game {
         p.setX(X);
         p.setY(Y);
 
-
-
     }
 
     //Vastustajan tekemän liikkeen siirto
     public void moveOpponent(Piece p, int xCoord, int yCoord){
-        /*
-        p.setTranslateX(xCoord);
-        p.setTranslateY(yCoord);
-         */
         Rectangle rec = rcts[yCoord][xCoord];
         p.setTranslateX(rec.localToParent(rec.getX(),rec.getY()).getX());
         p.setTranslateY(rec.localToParent(rec.getX(),rec.getY()).getY());
-        //if(lastMoved != null)lastMoved.removeHighlight();
-        lastMoved = p;
         if(highlightable != null)highlightable.removeHighlight();
         highlightable = p;
         highlightable.setHighlight();
-        //lastMoved.setHighlight();
 
         //vastustajan tornitus vasemmalle valkoisilla
         if(p.getPieceType() == "king" && !p.gethasMoved() && sd == 0 && xCoord == 1 && yCoord == 0 && !pcs[0][0].gethasMoved()){
@@ -426,12 +379,7 @@ public class Game {
             rbrook.setY(0);
         }
 
-
-
-        //if(rec.localToParent(rec.getX(),rec.getY()).getX() == xCoord)
         System.out.println("vastustajan lähettämät k. " + xCoord + " " +yCoord);
-
-        //System.out.println(xCoord +" "+ yCoord);
         for(Piece pi : pieces){
             if(pi.getX() == xCoord && pi.getY() == yCoord && p != pi){
                 Platform.runLater(() -> {
@@ -464,13 +412,10 @@ public class Game {
     }
 
     public void spawnPieces(int side, int size){
-
-
-        //Mustat nappulat
-        //(Yläpuolen nappulat)
+        //Yläpuolen nappulat
         String[] sides = {"b","w"};
-        Queen tq = new Queen(1-side, spaces, size, sides[1-side]+"q");
-        King tk = new King(1-side,spaces,size, sides[1-side]+"k");
+        Queen tq = new Queen(1-side, size, sides[1-side]+"q");
+        King tk = new King(1-side,size, sides[1-side]+"k");
         Bishop tb1,tb2;
         Rook tr1,tr2;
         Knight tk1,tk2;
@@ -478,21 +423,21 @@ public class Game {
 
         Piece[] topPieces = new Piece[16];
 
-        tb1 = new Bishop(1-side,spaces,size, sides[1-side]+"b1");
-        tb2 = new Bishop(1-side,spaces,size, sides[1-side]+"b2");
-        tr1 = new Rook(1-side,spaces,size, sides[1-side]+"r1");
-        tr2 = new Rook(1-side,spaces,size, sides[1-side]+"r2");
-        tk1 = new Knight(1-side,spaces,size, sides[1-side]+"k1");
-        tk2 = new Knight(1-side,spaces,size, sides[1-side]+"k2");
+        tb1 = new Bishop(1-side,size, sides[1-side]+"b1");
+        tb2 = new Bishop(1-side,size, sides[1-side]+"b2");
+        tr1 = new Rook(1-side,size, sides[1-side]+"r1");
+        tr2 = new Rook(1-side,size, sides[1-side]+"r2");
+        tk1 = new Knight(1-side,size, sides[1-side]+"k1");
+        tk2 = new Knight(1-side,size, sides[1-side]+"k2");
 
-        tp1 = new Pawn(1-side,spaces,size, sides[1-side]+"p1");
-        tp2 = new Pawn(1-side,spaces,size, sides[1-side]+"p2");
-        tp3 = new Pawn(1-side,spaces,size, sides[1-side]+"p3");
-        tp4 = new Pawn(1-side,spaces,size, sides[1-side]+"p4");
-        tp5 = new Pawn(1-side,spaces,size, sides[1-side]+"p5");
-        tp6 = new Pawn(1-side,spaces,size, sides[1-side]+"p6");
-        tp7 = new Pawn(1-side,spaces,size, sides[1-side]+"p7");
-        tp8 = new Pawn(1-side,spaces,size, sides[1-side]+"p8");
+        tp1 = new Pawn(1-side,size, sides[1-side]+"p1");
+        tp2 = new Pawn(1-side,size, sides[1-side]+"p2");
+        tp3 = new Pawn(1-side,size, sides[1-side]+"p3");
+        tp4 = new Pawn(1-side,size, sides[1-side]+"p4");
+        tp5 = new Pawn(1-side,size, sides[1-side]+"p5");
+        tp6 = new Pawn(1-side,size, sides[1-side]+"p6");
+        tp7 = new Pawn(1-side,size, sides[1-side]+"p7");
+        tp8 = new Pawn(1-side,size, sides[1-side]+"p8");
 
         topPieces[0] = tr1;
         topPieces[1] = tk1;
@@ -524,14 +469,9 @@ public class Game {
 
 
 
-
-
-
-
-
         //Alarivin nappulat
-        Queen bq = new Queen(side, spaces, size, sides[side]+"q");
-        King bk = new King(side,spaces,size, sides[side]+"k");
+        Queen bq = new Queen(side,size, sides[side]+"q");
+        King bk = new King(side,size, sides[side]+"k");
         Bishop bb1,bb2;
         Rook br1,br2;
         Knight bk1,bk2;
@@ -540,21 +480,21 @@ public class Game {
         Piece[] bottomPieces = new Piece[16];
 
 
-        bb1 = new Bishop(side,spaces,size, sides[side]+"b1");
-        bb2 = new Bishop(side,spaces,size, sides[side]+"b2");
-        br1 = new Rook(side,spaces,size, sides[side]+"r1");
-        br2 = new Rook(side,spaces,size, sides[side]+"r2");
-        bk1 = new Knight(side,spaces,size, sides[side]+"k1");
-        bk2 = new Knight(side,spaces,size, sides[side]+"k2");
+        bb1 = new Bishop(side,size, sides[side]+"b1");
+        bb2 = new Bishop(side,size, sides[side]+"b2");
+        br1 = new Rook(side,size, sides[side]+"r1");
+        br2 = new Rook(side,size, sides[side]+"r2");
+        bk1 = new Knight(side,size, sides[side]+"k1");
+        bk2 = new Knight(side,size, sides[side]+"k2");
 
-        bp1 = new Pawn(side,spaces,size, sides[side]+"p1");
-        bp2 = new Pawn(side,spaces,size, sides[side]+"p2");
-        bp3 = new Pawn(side,spaces,size, sides[side]+"p3");
-        bp4 = new Pawn(side,spaces,size, sides[side]+"p4");
-        bp5 = new Pawn(side,spaces,size, sides[side]+"p5");
-        bp6 = new Pawn(side,spaces,size, sides[side]+"p6");
-        bp7 = new Pawn(side,spaces,size, sides[side]+"p7");
-        bp8 = new Pawn(side,spaces,size, sides[side]+"p8");
+        bp1 = new Pawn(side,size, sides[side]+"p1");
+        bp2 = new Pawn(side,size, sides[side]+"p2");
+        bp3 = new Pawn(side,size, sides[side]+"p3");
+        bp4 = new Pawn(side,size, sides[side]+"p4");
+        bp5 = new Pawn(side,size, sides[side]+"p5");
+        bp6 = new Pawn(side,size, sides[side]+"p6");
+        bp7 = new Pawn(side,size, sides[side]+"p7");
+        bp8 = new Pawn(side,size, sides[side]+"p8");
 
         bottomPieces[0] = br1;
         bottomPieces[1] = bk1;
@@ -587,15 +527,6 @@ public class Game {
 
         }
 
-        //Toimiva
-        /*
-        for(Piece i : blackPieces){
-            setPieceListener(i);
-        }
-         for(Piece i : blackPieces){
-            cb.add(i,0,0);
-        }
-         */
 
         for(int i = 0; i<16; i++){
             cb.add(topPieces[i],0,0);
@@ -606,20 +537,12 @@ public class Game {
 
         //Runlater, jotta neliöiden rajat ovat asettuneet, ilman tätä ei jostain syystä toimi
         Platform.runLater(()-> {
-
-            //testataan milloin neliöt saadaan alustettua taulukkoon
-            //#################
             for(int i = 0; i<8; i++){
                 for(int j = 0; j<8; j++){
                     Rectangle r = getRectangle(i,j,cb);
                     rcts[i][j] = r;
-                    //System.out.println(r.localToParent(r.getX(), r.getY()).getX());
-                    //System.out.println(r.localToParent(r.getX(), r.getY()).getY());
                 }
             }
-            //#################
-
-
 
             int n = 0;
             for(int i = 0;i<2;i++){
@@ -705,7 +628,6 @@ public class Game {
                 case "DIAGONAL": {
                     int initialX = pc.getX();
                     int initialY = pc.getY();
-                    int yDown = initialY;
                     int pX = initialX;
                     int mX = initialX;
                     if (pc.getPieceType().equals("pawn") && initialY > 1) {
@@ -887,7 +809,6 @@ public class Game {
                     if(initialY <7 && initialX >0 && pcs[initialY+1][initialX-1] == null) available.add(rcts[initialY+1][initialX-1]);
 
                     //tornitus
-                    //if(pc.gethasMoved()) break;
                     Piece rightRook = pcs[7][7];
                     Piece leftRook = pcs[7][0];
                     boolean rightClear = true;
@@ -916,34 +837,6 @@ public class Game {
         return available;
     }
 
-
-
-    //tarkistetaan, aiheuttaako oman nappulan siirtäminen shakin
-    public boolean causesCheck(Piece p, int tomoveY, int tomoveX){
-        //puolustaako siirrettävä nappula kuningasta jostain suunnista: diagonaalinen tai vaaka/pysty
-        String side ="";
-        if(sd == 0) side = "b";
-        if(sd == 1) side = "w";
-        Piece ownKing = pcs[0][0];
-
-        for(int i = 0; i<8; i++){
-            for(int j = 0; j<8; j++){
-                if(pcs[i][j] != null && pcs[i][j].getPieceType() == "king" && pcs[i][j].getName().startsWith(side)){
-                    ownKing = pcs[i][j];
-                }
-            }
-        }
-
-        //puolustaako yläpuolella
-        for(int y = ownKing.getY(); y>-1;y--){
-            Piece u = pcs[y][ownKing.getX()];
-            if(u!=null && (u.getPieceType() == "queen"|| u.getPieceType() == "rook") && p.getX() == ownKing.getX() && tomoveX != ownKing.getX()){
-                return true;
-            }
-        }
-
-        return false;
-    }
 }
 
 

@@ -7,9 +7,13 @@ import javafx.scene.shape.Rectangle;
 
 import java.util.ArrayList;
 
+// Ville Kuokkanen 2.7.2019
+// Nappula-luokka peritään edelleen nappulasta, koska nappulaan on helppo lisätä siirtäminen ja painalluksien käsittely javafx:ssä
+// Ominaisuuksia ovat mm. koordinaattien asettaminen ja saaminen, korostuksen lisääminen ja poistaminen sekä kuvan koon
+// määrittäminen.
+
 public class Piece extends Button {
     private int side;
-    private int[][] coords;
     private int X;
     private int Y;
     private int size;
@@ -22,7 +26,6 @@ public class Piece extends Button {
     public Piece(){
         this.setPickOnBounds(true);
         this.setStyle("-fx-background-color: transparent;");
-        //this.setStyle("-fx-background-color: BLUE;");
     }
 
     public void setName(String name){
@@ -30,9 +33,6 @@ public class Piece extends Button {
     }
     public void setSide(int side) {
         this.side = side;
-    }
-    public void setCoords(int[][] coords){
-        this.coords = coords;
     }
     public void setSize(int size){
         this.size = size;
@@ -42,8 +42,6 @@ public class Piece extends Button {
         iv.setFitHeight(size-5);
         iv.setFitWidth(size-15);
         iv.setPreserveRatio(true);
-        //iv.setStyle("-fx-effect: dropshadow(gaussian, #ea2a15, 2, 1.0, 0, 0);");
-        //iv.setStyle("-fx-border-color: #ea2a15");
         this.setGraphic(iv);
 
     }
@@ -53,9 +51,8 @@ public class Piece extends Button {
     }
 
 
-    public Piece(int side, int[][]coords , int size){
+    public Piece(int side, int size){
         this.side = side;
-        this.coords = coords;
         this.setPickOnBounds(true);
     }
 
@@ -80,10 +77,6 @@ public class Piece extends Button {
     public void setPieceType(String s){this.pieceType = s;}
     public void setMovable(String[] s){
         this.movable = s;
-    }
-
-    public boolean validate(int X , int Y){
-        return true;
     }
 
     public String getPieceType(){

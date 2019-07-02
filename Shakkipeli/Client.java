@@ -7,6 +7,12 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 
+// Ville Kuokkanen 2.7.2019
+// Client-luokkassa muodostetaan yhteys palvelimeen
+// Client käynnistetään Shakkicontrollerista käsin omana säikeenään, jonka jälkeen Client jakaa käyttäjän
+// liikenteen vielä edelleen kahteen säikeeseen: in ja out.
+// Tässä myös vastaanotetaan ja lähetetään viestit sekä siirrot.
+
 public class Client extends Thread {
     public int port;
     public InetAddress ia;
@@ -36,16 +42,6 @@ public class Client extends Thread {
         String pieceName = pc.getName();
         t_out.out("@" + " " +x +" "+ y+" "+pieceName);
     }
-    /*
-    public void sendMove(Point2D point, Piece pc){
-        double toX = point.getX();
-        double toY = point.getY();
-        String pieceName = pc.getName();
-
-        t_out.out("@" +" "+toX +" " + toY + " " + " " + pieceName);
-    }
-
-     */
 
     @Override
     public void run() {

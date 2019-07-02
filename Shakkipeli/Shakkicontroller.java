@@ -1,42 +1,30 @@
 package Shakkipeli;
 
 import javafx.application.Platform;
-import javafx.event.EventHandler;
-import javafx.geometry.Point2D;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-
-import java.io.UnsupportedEncodingException;
 import java.net.*;
 import java.util.ResourceBundle;
 import java.util.Optional;
-
 import javafx.scene.control.TextInputDialog;
-import javafx.scene.shape.StrokeType;
-import javafx.stage.Stage;
-import javafx.stage.Window;
-import javafx.stage.WindowEvent;
 
+// Ville Kuokkanen 2.7.2019
+// Shakkicontroller on luokka käyttöliittymän tapahtumia varten. Kaikki käyttöliittymän nappien painallukset ja tekstikentät
+// käsitellään tässä.
 
 public class Shakkicontroller implements Initializable{
     private Game game;
     private boolean isServer = true;
     private Server palvelin;
     private Client asiakas;
-    private boolean listenToClient = true;
-
-
     private String puoli;
     private String IPString;
     private String PortString;
-
     private String localPort;
-
-    //@FXML private Button fxLiity;
     @FXML private TextField fxIP;
     @FXML private TextField fxPortti;
     @FXML private TextField fxChatbox;
@@ -45,18 +33,12 @@ public class Shakkicontroller implements Initializable{
 
     //Liittymisnapin tapahtuma
     @FXML void handleLiity(){
-        listenToClient = false;
         isServer = false;
         System.out.println(IPString);
         System.out.println(PortString);
-        //createBoard();
-
-        // Luo shakkinappulat
-
         try {
             asiakas = new Client(InetAddress.getByName(IPString), Integer.parseInt(PortString), this);
             System.out.println(InetAddress.getByName(IPString));
-            //client.start();
         } catch (UnknownHostException e) {
             e.printStackTrace();
             fxChatfield.appendText("IP-osoitteeseen ei voida liittyä" +"\n");
@@ -89,12 +71,6 @@ public class Shakkicontroller implements Initializable{
 
     public void alusta(){
 
-        //TESTAUSTA VARTEN
-        //IPString = "127.0.0.1";
-        //PortString = "57";
-        //localPort = "58";
-
-
         fxIP.textProperty().addListener((observable, f, newIP) -> {
             IPString = newIP;
         });
@@ -103,9 +79,6 @@ public class Shakkicontroller implements Initializable{
             if(newPort.matches("[0-9]+"))PortString = newPort;
 
         });
-
-
-        //TESTAUSTA VARTEN POISTETTU
 
         TextInputDialog f = new TextInputDialog("");
         f.setResizable(true);
@@ -125,18 +98,9 @@ public class Shakkicontroller implements Initializable{
             else fxChatfield.appendText("Syötetty portti on virheellinen, käynnistä peli uudelleen jos haluat, että peliisi voidaan liittyä" + "\n");
         });
 
-
-
-
-
-
-
-
-        //kuuntele();
-
-
-
     }
+
+
     public void startServer(){
         palvelin = new Server(Integer.parseInt(localPort), this);
         palvelin.start();
@@ -196,32 +160,20 @@ public class Shakkicontroller implements Initializable{
 
     public void createBoard(){
 
-        //final int size = 8;
         for (int i = 0; i<8; i++) {
             for (int j = 0; j<8; j++) {
                 Rectangle square = new Rectangle();
                 Color color;
                 if ((i+j) %2 == 0) {
                     color = Color.valueOf("#eeeeee");
-                    //color = Color.rgb(242, 237, 225);
                 } else {
                     color = Color.valueOf("#82747e");
-                    //color = Color.rgb(114, 175, 161);
                 }
 
                 square.setFill(color);
-                /*
-                square.setStrokeType(StrokeType.INSIDE);
-                square.setStrokeWidth(1);
-                square.setStroke(Color.GREY);
-                //square.setStyle("-fx-background-color: "+BLACK+";");
-
-                 */
 
                 GridPane.setConstraints(square, i,j);
-                //TOIMIVA
                 fxChessgrid.add(square, i, j);
-
                 square.widthProperty().bind(fxChessgrid.widthProperty().divide(8));
                 square.heightProperty().bind(fxChessgrid.heightProperty().divide(8));
 
@@ -240,28 +192,12 @@ public class Shakkicontroller implements Initializable{
         if(!isServer)asiakas.sendMove(mX, mY, ps);
 
     }
-/*
-    public void sendMove(Point2D tomove, Piece ps){
-        double yCoord = fxChessgrid.heightProperty().get()-tomove.getY()-2.625-fxChessgrid.heightProperty().divide(8).get();
-        double xCoord = fxChessgrid.widthProperty().get()-tomove.getX()-2.625-fxChessgrid.widthProperty().divide(8).get();
-
-
-        Point2D newCoord = new Point2D(xCoord,yCoord);
-        if(isServer)palvelin.sendMove(newCoord, ps);
-        if(!isServer)asiakas.sendMove(newCoord, ps);
-
-           //palvelin.sendMove(fmove, ps);
-
-    }
-    */
 
     public void interpretMove(String move){
         String[] split = move.split(" ");
         String xCoord = split[1];
         String yCoord = split[2];
-        String pcname = split[3];
-        //System.out.println(xCoord + " " + yCoord + " " +pcname);
-        //game.moveOpponent(game.getByName(pcname), Double.parseDouble(xCoord), Double.parseDouble(yCoord));
+        String pcname = split[3];;
         game.moveOpponent(game.getByName(pcname), Integer.parseInt(xCoord), Integer.parseInt(yCoord));
     }
 
