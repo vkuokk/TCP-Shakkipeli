@@ -205,7 +205,7 @@ public class Game {
                         cb.getChildren().remove(p);
                         if(p.getPieceType() == "king"){
                             Platform.runLater(()-> {
-                                shc.appendInfo("voitit pelin");
+                                shc.appendInfo("Voitit pelin");
                             });
                         }
                         turn = false;
@@ -436,7 +436,7 @@ public class Game {
             if(pi.getX() == xCoord && pi.getY() == yCoord && p != pi){
                 Platform.runLater(() -> {
                     cb.getChildren().remove(pi);
-                    if(pi.getPieceType() == "king") shc.appendText("Hävisit pelin");
+                    if(pi.getPieceType() == "king") shc.appendInfo("Hävisit pelin");
                 });
 
             }
