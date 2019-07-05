@@ -78,7 +78,7 @@ public class Game {
 
     }
 
-    public void setPieceListener(Piece p){
+    private void setPieceListener(Piece p){
         p.setOnMousePressed(e -> {
             dragged = false;
             moveStartx = p.getTranslateX();
@@ -210,7 +210,7 @@ public class Game {
 
     //Asetetaan kuuntelijat kaikille gridpane(cb):ssa oleville neliöille
     //ja hiiren ollessa sen kohdalla tiputetaan valittu nappula siihen
-    public void setListener(Rectangle r) {
+    private void setListener(Rectangle r) {
         r.setOnMouseDragReleased( e -> {
             if(turn && possibilities.contains(r)) {
                 if(highlightable != null)highlightable.removeHighlight();
@@ -304,7 +304,7 @@ public class Game {
     }
 
     //Alustetaan nappulat oikeille paikoilleen
-    public void move(Piece p, Rectangle r ){
+    private void move(Piece p, Rectangle r ){
 
 
         p.setTranslateX(r.localToParent(r.getX(),r.getY()).getX());
@@ -399,7 +399,7 @@ public class Game {
 
     }
 
-    public Rectangle getRectangle(int rivi, int sarake, GridPane gp){
+    private Rectangle getRectangle(int rivi, int sarake, GridPane gp){
         Node nd = null;
         ObservableList<Node> nds = gp.getChildren();
         for(Node node : nds){
@@ -411,7 +411,7 @@ public class Game {
         return (Rectangle)nd;
     }
 
-    public void spawnPieces(int side, int size){
+    private void spawnPieces(int side, int size){
         //Yläpuolen nappulat
         String[] sides = {"b","w"};
         Queen tq = new Queen(1-side, size, sides[1-side]+"q");
@@ -579,7 +579,7 @@ public class Game {
 
 
     //Haetaan oikea neliö koordinaattien perusteella
-    public Rectangle getRbyC(double x, double y){
+    private Rectangle getRbyC(double x, double y){
         Rectangle re = null;
         for(int i = 0; i<8; i++){
             for(int j = 0; j<8; j++) {
@@ -594,7 +594,7 @@ public class Game {
         return re;
     }
 
-    public ArrayList<Rectangle> getAvailable (Piece pc){
+    private ArrayList<Rectangle> getAvailable (Piece pc){
         ArrayList<Rectangle> available = new ArrayList<>();
         String side = "";
         if(sd == 0) side = "b";

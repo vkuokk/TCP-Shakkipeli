@@ -61,11 +61,11 @@ public class Client extends Thread {
         private String vastaanotettu;
         private boolean running = true;
 
-        public trafficIn(Socket client) {
+        private trafficIn(Socket client) {
             this.ssock = client;
             this.start();
         }
-        public void stopRunning(){
+        private void stopRunning(){
             t_out.out("Lopetti pelin");
             try {
                 ssock.close();
@@ -76,18 +76,12 @@ public class Client extends Thread {
 
         }
 
-        public String in(){
-
-            return "ei viestiä";
-        }
-
         @Override
         public void run() {
             try {
                 BufferedReader inp = new BufferedReader(new InputStreamReader(ssock.getInputStream(),"UTF-8"));
                 while(running) {
                     vastaanotettu = inp.readLine();
-                    //System.out.println(vastaanotettu);
                     if(vastaanotettu == null) {
                         Platform.runLater(()->{
                             shc.appendInfo("Vastustaja sulki pelin");
@@ -126,11 +120,11 @@ public class Client extends Thread {
         private Socket csock;
         private DataOutputStream out;
 
-        public trafficOut(Socket client) {
+        private trafficOut(Socket client) {
             this.csock = client;
             this.start();
         }
-        public void stopRunning(){
+        private void stopRunning(){
             try {
                 csock.close();
                 out.close();
@@ -141,14 +135,13 @@ public class Client extends Thread {
 
         }
 
-        public void out(String msg){
+        private void out(String msg){
             try {
                 out.writeUTF(msg + "\n");
 
                 out.flush();
 
             } catch (IOException e) {
-                //e.printStackTrace();
                 this.stopRunning();
             }
         }
@@ -161,7 +154,6 @@ public class Client extends Thread {
                 out = new DataOutputStream(csock.getOutputStream());
 
             } catch (IOException e) {
-                //e.printStackTrace();
                 this.stopRunning();
             }
         }

@@ -13,9 +13,9 @@ import java.util.Random;
 // Kuten Client, myös Server avaa lisäksi uudet säikeet sisäänpäin ja ulospäin menevälle liikenteelle.
 
 public class Server extends Thread {
-    public int portti;
-    public trafficIn t_in;
-    public trafficOut t_out;
+    private int portti;
+    private trafficIn t_in;
+    private trafficOut t_out;
     private Shakkicontroller shc;
     private boolean running = true;
 
