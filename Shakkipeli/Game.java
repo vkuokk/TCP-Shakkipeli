@@ -3,9 +3,13 @@ package Shakkipeli;
 import javafx.application.Platform;
 import javafx.beans.Observable;
 import javafx.collections.ObservableList;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -24,12 +28,14 @@ public class Game {
     private boolean turn = false;
     //@FXML
     //private Queen queen;
+    private boolean otherButtonPressed;
     private Piece highlightable;
     private Piece currentpiece;
     private Piece lastMoved;
     private ArrayList<Piece> pieces = new ArrayList<>();
     private ArrayList<Rectangle> possibilities = new ArrayList<>();
     private Shakkicontroller shc;
+    private boolean rightPressed;
 
     int[][] spaces = new int[8][8];
     Rectangle[][] rcts = new Rectangle[8][8];
@@ -90,142 +96,150 @@ public class Game {
 
     public void setPieceListener(Piece p){
         p.setOnMousePressed(e -> {
-            dragged = false;
-            moveStartx = p.getTranslateX();
-            moveStarty = p.getTranslateY();
+                otherButtonPressed = false;
+                rightPressed = false;
+                dragged = false;
 
-            mouseX = e.getSceneX();
-            mouseY = e.getSceneY();
-            oldX = p.getTranslateX();
-            oldY = p.getTranslateY();
+                moveStartx = p.getTranslateX();
+                moveStarty = p.getTranslateY();
 
-            p.setMouseTransparent(true);
+                mouseX = e.getSceneX();
+                mouseY = e.getSceneY();
+                oldX = p.getTranslateX();
+                oldY = p.getTranslateY();
 
+                p.setMouseTransparent(true);
 
             e.consume();
+
         });
 
         p.setOnMouseReleased(e -> {
-            Rectangle r = getRbyC(p.getTranslateX(),p.getTranslateY());
+                Rectangle r = getRbyC(p.getTranslateX(), p.getTranslateY());
 
-            if(!dragged || !possibilities.contains(r)){
-                p.setTranslateX(moveStartx);
-                p.setTranslateY(moveStarty);
-            }
-            //System.out.println("Nappulan koordinaatit: " + p.getTranslateX() + " " +p.getTranslateY());
-            //System.out.println(b);
-            if(p.getTranslateX() < -1 || p.getTranslateX() > 500 || p.getTranslateY() < -1 || p.getTranslateY() > 500){
-                p.setTranslateX(moveStartx);
-                p.setTranslateY(moveStarty);
-            }
-            Double d = cb.getMinHeight();
-            for(Rectangle re : possibilities){
-                re.setStrokeWidth(0);
-            }
-            p.setMouseTransparent(false);
+                if (!otherButtonPressed && (!dragged || !possibilities.contains(r))) {
+                    p.setTranslateX(moveStartx);
+                    p.setTranslateY(moveStarty);
+                }
+                //System.out.println("Nappulan koordinaatit: " + p.getTranslateX() + " " +p.getTranslateY());
+                //System.out.println(b);
+                if (!otherButtonPressed && (p.getTranslateX() < -1 || p.getTranslateX() > 500 || p.getTranslateY() < -1 || p.getTranslateY() > 500)) {
+                    p.setTranslateX(moveStartx);
+                    p.setTranslateY(moveStarty);
+                }
+                Double d = cb.getMinHeight();
+                for (Rectangle re : possibilities) {
+                    re.setStrokeWidth(0);
+                }
+                p.setMouseTransparent(false);
             e.consume();
 
         });
         p.setOnDragDetected(e -> {
-            dragged = true;
-            p.startFullDrag();
-            //if(lastMoved !=null)lastMoved.removeHighlight();
-            currentpiece = p;
-            lastMoved = p;
-            ArrayList<Rectangle> canBeMoved = getAvailable(currentpiece);
-            possibilities = canBeMoved;
-            for(Rectangle r : possibilities){
-                r.setStrokeType(StrokeType.INSIDE);
-                r.setStrokeWidth(4);
-                r.setStroke(Color.GREEN);
-            }
+            if(!rightPressed) {
 
-            currentpiece.toFront();
-            System.out.println("drag detected");
-            p.setMouseTransparent(true);
+                dragged = true;
+                p.startFullDrag();
+                //if(lastMoved !=null)lastMoved.removeHighlight();
+                currentpiece = p;
+                lastMoved = p;
+                ArrayList<Rectangle> canBeMoved = getAvailable(currentpiece);
+                possibilities = canBeMoved;
+                for (Rectangle r : possibilities) {
+                    r.setStrokeType(StrokeType.INSIDE);
+                    r.setStrokeWidth(4);
+                    r.setStroke(Color.GREEN);
+                }
+
+                currentpiece.toFront();
+                System.out.println("drag detected");
+                p.setMouseTransparent(true);
+            }
             e.consume();
 
         });
         p.setOnMouseDragged(e -> {
+            if(e.isPrimaryButtonDown()) {
+                double offsetX = e.getSceneX() - mouseX;
+                double offsetY = e.getSceneY() - mouseY;
 
-            double offsetX = e.getSceneX() - mouseX;
-            double offsetY = e.getSceneY() - mouseY;
+                newTranslateX = oldX + offsetX;
+                newTranslateY = oldY + offsetY;
+                p.setMouseTransparent(true);
 
-            newTranslateX = oldX + offsetX;
-            newTranslateY = oldY + offsetY;
-            p.setMouseTransparent(true);
-
-            p.setTranslateX(newTranslateX);
-            p.setTranslateY(newTranslateY);
+                p.setTranslateX(newTranslateX);
+                p.setTranslateY(newTranslateY);
+            }
             e.consume();
 
         });
 
         p.setOnMouseDragReleased(e -> {
-            //if(lastMoved !=null)lastMoved.removeHighlight();
-            String side;
-            if(sd == 0) side = "b";
-            else side = "w";
-            lastMoved = currentpiece;
+                String side;
+                if (sd == 0) side = "b";
+                else side = "w";
+                lastMoved = currentpiece;
 
-            //Tarkistetaan onko nappula, jonka päälle siirretään toinen, laillinen siirto, jotta highlight toimii oikein
-            if(possibilities.contains(rcts[p.getY()][p.getX()]) && currentpiece.getName().startsWith(side) && !p.getName().startsWith(side)) {
+                //Tarkistetaan onko nappula, jonka päälle siirretään toinen, laillinen siirto, jotta highlight toimii oikein
+                if (possibilities.contains(rcts[p.getY()][p.getX()]) && currentpiece.getName().startsWith(side) && !p.getName().startsWith(side)) {
 
-                if(highlightable != null) highlightable.removeHighlight();
-                highlightable = currentpiece;
-                highlightable.setHighlight();
-            }
+                    if (highlightable != null) highlightable.removeHighlight();
+                    highlightable = currentpiece;
+                    highlightable.setHighlight();
+                }
 
-            if(turn) {
-                Platform.runLater(() -> {
-                    Rectangle r = getRbyC(p.getTranslateX(),p.getTranslateY());
-                    if(possibilities.contains(r)) {
+                if (turn) {
+                    Platform.runLater(() -> {
+                        Rectangle r = getRbyC(p.getTranslateX(), p.getTranslateY());
+                        if (possibilities.contains(r)) {
 
-                        currentpiece.setTranslateX(p.getTranslateX());
-                        currentpiece.setTranslateY(p.getTranslateY());
-                        int X = 0;
-                        int Y = 0;
-                        for (int i = 0; i < 8; i++) {
-                            for (int j = 0; j < 8; j++) {
-                                if (rcts[i][j] == r) {
-                                    X = j;
-                                    Y = i;
+                            currentpiece.setTranslateX(p.getTranslateX());
+                            currentpiece.setTranslateY(p.getTranslateY());
+                            int X = 0;
+                            int Y = 0;
+                            for (int i = 0; i < 8; i++) {
+                                for (int j = 0; j < 8; j++) {
+                                    if (rcts[i][j] == r) {
+                                        X = j;
+                                        Y = i;
+                                    }
                                 }
                             }
+                            final int fX = X;
+                            final int fY = Y;
+                            shc.sendMove(fX, fY, currentpiece);
+
+                            pcs[p.getY()][p.getX()] = currentpiece;
+                            pcs[currentpiece.getY()][currentpiece.getX()] = null;
+                            currentpiece.setX(p.getX());
+                            currentpiece.setY(p.getY());
+                            currentpiece.setHasMoved();
+                            cb.getChildren().remove(p);
+                            if (p.getPieceType() == "king") {
+                                Platform.runLater(() -> {
+                                    shc.appendInfo("Voitit pelin");
+                                });
+                            }
+                            turn = false;
+
+                            for (Rectangle re : possibilities) {
+                                re.setStrokeWidth(0);
+                            }
+                            possibilities = new ArrayList<>();
+
+
                         }
-                        final int fX = X;
-                        final int fY = Y;
-                        shc.sendMove(fX, fY, currentpiece);
+                    });
+                }
 
-                        pcs[p.getY()][p.getX()] = currentpiece;
-                        pcs[currentpiece.getY()][currentpiece.getX()] = null;
-                        currentpiece.setX(p.getX());
-                        currentpiece.setY(p.getY());
-                        currentpiece.setHasMoved();
-                        cb.getChildren().remove(p);
-                        if(p.getPieceType() == "king"){
-                            Platform.runLater(()-> {
-                                shc.appendInfo("Voitit pelin");
-                            });
-                        }
-                        turn = false;
-
-                        for(Rectangle re : possibilities){
-                            re.setStrokeWidth(0);
-                        }
-                        possibilities = new ArrayList<>();
-
-
-                    }
-                });
-            }
 
             /*lastMoved.setHighlight();
               cb.getChildren().remove(p);
 
              */
-
         });
+        //p.addEventFilter(MouseEvent.ANY, e -> System.out.println( e));
+
     }
 
 
@@ -237,102 +251,100 @@ public class Game {
             //System.out.println("hiiri laatikon yläpuolella");
         });
         r.setOnMouseDragReleased( e -> {
-            //Oikea translate 0,0 ruudun suhteen:
+                //Oikea translate 0,0 ruudun suhteen:
 
-            if(turn && possibilities.contains(r)) {
-                //currentpiece.setHighlight();
-                //lastMoved.setHighlight();
-                if(highlightable != null)highlightable.removeHighlight();
-                int X = 0;
-                int Y = 0;
-                for(int i = 0; i<8;i++){
-                    for(int j = 0; j<8;j++){
-                        if(rcts[i][j] == r){
-                            X = j;
-                            Y = i;
+                if (turn && possibilities.contains(r)) {
+                    //currentpiece.setHighlight();
+                    //lastMoved.setHighlight();
+                    if (highlightable != null) highlightable.removeHighlight();
+                    int X = 0;
+                    int Y = 0;
+                    for (int i = 0; i < 8; i++) {
+                        for (int j = 0; j < 8; j++) {
+                            if (rcts[i][j] == r) {
+                                X = j;
+                                Y = i;
+                            }
                         }
                     }
+                    final int fX = X;
+                    final int fY = Y;
+                    System.out.println("tosend koord. " + fX + " " + fY);
+
+                    pcs[currentpiece.getY()][currentpiece.getX()] = null;
+                    pcs[Y][X] = currentpiece;
+
+                    currentpiece.setTranslateX(r.localToParent(r.getX(), r.getY()).getX());
+                    currentpiece.setTranslateY(r.localToParent(r.getX(), r.getY()).getY());
+                    currentpiece.setX(fX);
+                    currentpiece.setY(fY);
+                    highlightable = currentpiece;
+                    highlightable.setHighlight();
+
+                    //tornin siirto tornituksessa
+                    //tornitus oikealle valkoisilla
+                    if (currentpiece.getPieceType() == "king" && !currentpiece.gethasMoved() && X == 6 && Y == 7 && sd == 1) {
+                        Piece wrrook = pcs[7][7];
+                        Rectangle wrcas = rcts[7][5];
+                        pcs[7][7] = null;
+                        pcs[7][5] = wrrook;
+                        wrrook.setTranslateX(wrcas.localToParent(wrcas.getX(), wrcas.getY()).getX());
+                        wrrook.setTranslateY(wrcas.localToParent(wrcas.getX(), wrcas.getY()).getY());
+                        wrrook.setX(5);
+                        wrrook.setY(7);
+                    }
+                    //tornitus oikealle mustalla
+                    if (currentpiece.getPieceType() == "king" && !currentpiece.gethasMoved() && X == 5 && Y == 7 && sd == 0) {
+                        Piece brrook = pcs[7][7];
+                        Rectangle brcas = rcts[7][4];
+                        pcs[7][7] = null;
+                        pcs[7][4] = brrook;
+                        brrook.setTranslateX(brcas.localToParent(brcas.getX(), brcas.getY()).getX());
+                        brrook.setTranslateY(brcas.localToParent(brcas.getX(), brcas.getY()).getY());
+                        brrook.setX(4);
+                        brrook.setY(7);
+                    }
+                    //tornitus vasemmalle mustalla
+                    if (currentpiece.getPieceType() == "king" && !currentpiece.gethasMoved() && X == 1 && Y == 7 && sd == 0) {
+                        Piece lrrook = pcs[7][0];
+                        Rectangle lrcas = rcts[7][2];
+                        pcs[7][0] = null;
+                        pcs[7][2] = lrrook;
+                        lrrook.setTranslateX(lrcas.localToParent(lrcas.getX(), lrcas.getY()).getX());
+                        lrrook.setTranslateY(lrcas.localToParent(lrcas.getX(), lrcas.getY()).getY());
+                        lrrook.setX(2);
+                        lrrook.setY(7);
+                    }
+                    //tornitus vasemmalle valkoisella
+                    if (currentpiece.getPieceType() == "king" && !currentpiece.gethasMoved() && X == 2 && Y == 7 && sd == 1) {
+                        Piece lwrook = pcs[7][0];
+                        Rectangle blcas = rcts[7][3];
+                        pcs[7][0] = null;
+                        pcs[7][3] = lwrook;
+                        lwrook.setTranslateX(blcas.localToParent(blcas.getX(), blcas.getY()).getX());
+                        lwrook.setTranslateY(blcas.localToParent(blcas.getX(), blcas.getY()).getY());
+                        lwrook.setX(3);
+                        lwrook.setY(7);
+
+                    }
+
+                    currentpiece.setHasMoved();
+
+                    for (Rectangle re : possibilities) {
+                        re.setStrokeWidth(0);
+                    }
+
+                    Platform.runLater(() -> {
+                        //shc.sendMove(r.localToParent(r.getX(), r.getY()), currentpiece);
+                        shc.sendMove(fX, fY, currentpiece);
+                    });
+                    turn = false;
+                    //possibilities = new ArrayList<>();
+                } else {
+                    currentpiece.setTranslateX(moveStartx);
+                    currentpiece.setTranslateY(moveStarty);
                 }
-                final int fX = X;
-                final int fY = Y;
-                System.out.println("tosend koord. " +fX + " " + fY);
-
-                pcs[currentpiece.getY()][currentpiece.getX()] = null;
-                pcs[Y][X] = currentpiece;
-
-                currentpiece.setTranslateX(r.localToParent(r.getX(), r.getY()).getX());
-                currentpiece.setTranslateY(r.localToParent(r.getX(), r.getY()).getY());
-                currentpiece.setX(fX);
-                currentpiece.setY(fY);
-                highlightable = currentpiece;
-                highlightable.setHighlight();
-
-                //tornin siirto tornituksessa
-                //tornitus oikealle valkoisilla
-                if(currentpiece.getPieceType() == "king" && !currentpiece.gethasMoved() && X == 6 && Y == 7 && sd == 1){
-                    Piece wrrook = pcs[7][7];
-                    Rectangle wrcas = rcts[7][5];
-                    pcs[7][7] = null;
-                    pcs[7][5] = wrrook;
-                    wrrook.setTranslateX(wrcas.localToParent(wrcas.getX(), wrcas.getY()).getX());
-                    wrrook.setTranslateY(wrcas.localToParent(wrcas.getX(), wrcas.getY()).getY());
-                    wrrook.setX(5);
-                    wrrook.setY(7);
-                }
-                //tornitus oikealle mustalla
-                if(currentpiece.getPieceType() == "king" && !currentpiece.gethasMoved() && X ==5 && Y ==7 && sd == 0){
-                    Piece brrook = pcs[7][7];
-                    Rectangle brcas = rcts[7][4];
-                    pcs[7][7] = null;
-                    pcs[7][4] = brrook;
-                    brrook.setTranslateX(brcas.localToParent(brcas.getX(), brcas.getY()).getX());
-                    brrook.setTranslateY(brcas.localToParent(brcas.getX(), brcas.getY()).getY());
-                    brrook.setX(4);
-                    brrook.setY(7);
-                }
-                //tornitus vasemmalle mustalla
-                if(currentpiece.getPieceType() == "king" && !currentpiece.gethasMoved() && X == 1 && Y == 7 && sd == 0){
-                    Piece lrrook = pcs[7][0];
-                    Rectangle lrcas = rcts[7][2];
-                    pcs[7][0] = null;
-                    pcs[7][2] = lrrook;
-                    lrrook.setTranslateX(lrcas.localToParent(lrcas.getX(), lrcas.getY()).getX());
-                    lrrook.setTranslateY(lrcas.localToParent(lrcas.getX(), lrcas.getY()).getY());
-                    lrrook.setX(2);
-                    lrrook.setY(7);
-                }
-                //tornitus vasemmalle valkoisella
-                if(currentpiece.getPieceType() == "king" && !currentpiece.gethasMoved() && X == 2 && Y == 7 && sd == 1){
-                    Piece lwrook = pcs[7][0];
-                    Rectangle blcas = rcts[7][3];
-                    pcs[7][0] = null;
-                    pcs[7][3] = lwrook;
-                    lwrook.setTranslateX(blcas.localToParent(blcas.getX(), blcas.getY()).getX());
-                    lwrook.setTranslateY(blcas.localToParent(blcas.getX(), blcas.getY()).getY());
-                    lwrook.setX(3);
-                    lwrook.setY(7);
-
-                }
-
-                currentpiece.setHasMoved();
-
-                for(Rectangle re : possibilities){
-                    re.setStrokeWidth(0);
-                }
-
-                Platform.runLater(() -> {
-                    //shc.sendMove(r.localToParent(r.getX(), r.getY()), currentpiece);
-                    shc.sendMove(fX, fY, currentpiece);
-                });
-                turn = false;
-                //possibilities = new ArrayList<>();
-            }
-            else{
-                currentpiece.setTranslateX(moveStartx);
-                currentpiece.setTranslateY(moveStarty);
-            }
-            //System.out.println("uudet koordinaatit " + r.localToParent(r.getX(),r.getY()).getX() +"   " +r.localToParent(r.getX(),r.getY()).getY());
-
+                //System.out.println("uudet koordinaatit " + r.localToParent(r.getX(),r.getY()).getX() +"   " +r.localToParent(r.getX(),r.getY()).getY());
 
         });
     }

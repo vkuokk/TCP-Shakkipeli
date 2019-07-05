@@ -58,14 +58,15 @@ public class Server extends Thread {
     public void run() {
         try {
             ServerSocket s = new ServerSocket(portti);
-            String[] side ={"musta", "valkoinen"};
-            final String puoli;
-            Random random = new Random();
-            puoli = side[random.nextInt(side.length)];
+
 
             while(running) {
 
                 Socket sock = s.accept();
+                String[] side ={"musta", "valkoinen"};
+                final String puoli;
+                Random random = new Random();
+                puoli = side[random.nextInt(side.length)];
                 //System.out.println("soketti hyväksytty");
                 //shc.setPuoli(puoli);
                 shc.getFxChatfield().appendText("Pelaaja liittyi osoittesta "+ sock.getInetAddress().toString() + "\n");
