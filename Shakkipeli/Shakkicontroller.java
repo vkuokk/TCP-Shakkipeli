@@ -34,11 +34,8 @@ public class Shakkicontroller implements Initializable{
     //Liittymisnapin tapahtuma
     @FXML void handleLiity(){
         isServer = false;
-        System.out.println(IPString);
-        System.out.println(PortString);
         try {
             asiakas = new Client(InetAddress.getByName(IPString), Integer.parseInt(PortString), this);
-            System.out.println(InetAddress.getByName(IPString));
         } catch (UnknownHostException e) {
             e.printStackTrace();
             fxChatfield.appendText("IP-osoitteeseen ei voida liittyä" +"\n");
@@ -49,7 +46,6 @@ public class Shakkicontroller implements Initializable{
     //tekstikenttään kirjoittaminen
     @FXML void handleChat(){
         String msg = fxChatbox.getText();
-        System.out.println(msg);
         fxChatfield.appendText(msg + "\n");
         if(isServer)palvelin.send(msg);
         if(!isServer)asiakas.send(msg);
@@ -58,8 +54,6 @@ public class Shakkicontroller implements Initializable{
 
     //Pelin lopettamisen käsittely
     @FXML void handleLopeta(){
-        System.out.println("lopetetaan client");
-
             if(!isServer)asiakas.stopRunning();
             if(isServer)palvelin.stopRunning();
             fxChessgrid.getChildren().clear();
@@ -125,13 +119,6 @@ public class Shakkicontroller implements Initializable{
 
     public void setPuoli(String puoli){
         this.puoli = puoli;
-        String testiteksti = "//0";
-        byte[] b = testiteksti.getBytes();
-
-        for(byte bi : b){
-            System.out.println(bi);
-        }
-
         if(isServer) {
             if (puoli == "musta") palvelin.send("//1");
             else palvelin.send("//0");
@@ -182,7 +169,6 @@ public class Shakkicontroller implements Initializable{
     public void sendMove(int xcoord, int ycoord, Piece ps){
         int mX = 7-xcoord;
         int mY = 7-ycoord;
-        System.out.println("lähetettävät koordinaatit: " + mX + " " +mY);
 
 
         if(isServer)palvelin.sendMove(mX, mY, ps);

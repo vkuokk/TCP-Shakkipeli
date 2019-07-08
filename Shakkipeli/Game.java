@@ -127,7 +127,6 @@ public class Game {
             }
 
             currentpiece.toFront();
-            System.out.println("drag detected");
             p.setMouseTransparent(true);
             e.consume();
 
@@ -226,7 +225,6 @@ public class Game {
                 }
                 final int fX = X;
                 final int fY = Y;
-                System.out.println("tosend koord. " +fX + " " + fY);
 
                 pcs[currentpiece.getY()][currentpiece.getX()] = null;
                 pcs[Y][X] = currentpiece;
@@ -379,7 +377,6 @@ public class Game {
             rbrook.setY(0);
         }
 
-        System.out.println("vastustajan lähettämät k. " + xCoord + " " +yCoord);
         for(Piece pi : pieces){
             if(pi.getX() == xCoord && pi.getY() == yCoord && p != pi){
                 Platform.runLater(() -> {
