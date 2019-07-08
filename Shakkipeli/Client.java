@@ -47,7 +47,6 @@ public class Client extends Thread {
     public void run() {
             try {
                 Socket soc = new Socket(ia,port);
-                System.out.println("soketti luotu " + ia.toString() + port);
                 t_in = new trafficIn(soc);
                 t_out = new trafficOut(soc);
 

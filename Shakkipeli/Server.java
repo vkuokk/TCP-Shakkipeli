@@ -97,17 +97,14 @@ public class Server extends Thread {
 
             while(running){
                 try{
-                    System.out.println("yritetään lukea viestiä");
                     line = inp.readLine();
                     if(line == null) break;
                     if(line.contains("@")){
                         shc.interpretMove(line);
                     }
                     if(!line.contains("@") && line.length() > 2) shc.appendText(line);
-                    System.out.println(line);
 
                 }catch (IOException e){
-                    System.out.println("luku epäonnistui");
                     ssock.close();
                     break;
                 }
