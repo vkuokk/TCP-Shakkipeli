@@ -8,21 +8,23 @@ JavaFX: https://gluonhq.com/products/javafx/
 ### Prerequisites
 Instructions for setting environment variables for JavaFX can be found here: https://openjfx.io/openjfx-docs/#install-javafx
 
-Compiling (windows)
+#### Compiling from command line
+* windows
 ```
 javac --module-path %PATH_TO_FX% --add-modules javafx.controls,javafx.fxml Shakkipeli/Main.java
 ```
-(linux)
+* linux
 ```
 javac --module-path $PATH_TO_FX --add-modules javafx.controls,javafx.fxml Shakkipeli/Main.java
 ```
 
 
-Running (windows)
+#### Running from command line
+* windows
 ```
 java --module-path %PATH_TO_FX% --add-modules javafx.controls,javafx.fxml Shakkipeli.Main
 ```
-(linux)
+* linux
 ```
 java --module-path $PATH_TO_FX --add-modules javafx.controls,javafx.fxml Shakkipeli.Main.
 ```
