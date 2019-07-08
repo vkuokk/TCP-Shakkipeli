@@ -30,12 +30,12 @@ public class Server extends Thread {
 
     }
 
-
+    // Viestin lähettäminen
     public void send(String message){
         t_out.out(message);
     }
 
-
+    // Siirron lähettäminen
     public void sendMove(int x, int y, Piece pc){
         String pieceName = pc.getName();
         t_out.out("@" + " " +x +" "+ y+" "+pieceName);
@@ -51,7 +51,6 @@ public class Server extends Thread {
             puoli = side[random.nextInt(side.length)];
 
             while(running) {
-
                 Socket sock = s.accept();
                 shc.getFxChatfield().appendText("Pelaaja liittyi osoittesta "+ sock.getInetAddress().toString() + "\n");
 
@@ -67,12 +66,9 @@ public class Server extends Thread {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
-
-
     }
 
+    // Säie sisään tulevaa liikennettä varten
     private class trafficIn extends Thread{
         private Socket ssock;
         private boolean running = true;
@@ -96,12 +92,8 @@ public class Server extends Thread {
         @Override
         public void run() {
             String line;
-
-
             try{
-
                 BufferedReader inp = new BufferedReader(new InputStreamReader(ssock.getInputStream(), "UTF-8"));
-
 
             while(running){
                 try{
@@ -123,10 +115,6 @@ public class Server extends Thread {
             }catch (IOException e){
                 System.out.println("pieleen meni " +e);
             }
-
-
-
-
         }
     }
 
@@ -134,6 +122,7 @@ public class Server extends Thread {
 
     }
 
+    // Säie ulospäin menevälle liikenteelle
     private class trafficOut extends Thread {
         private Socket csock;
         private DataOutputStream out;

@@ -399,6 +399,7 @@ public class Game {
 
     }
 
+    // Haetaan ruutu rivin ja sarakkeen perusteella
     private Rectangle getRectangle(int rivi, int sarake, GridPane gp){
         Node nd = null;
         ObservableList<Node> nds = gp.getChildren();
@@ -411,6 +412,7 @@ public class Game {
         return (Rectangle)nd;
     }
 
+    // Luodaan nappulat kentälle
     private void spawnPieces(int side, int size){
         //Yläpuolen nappulat
         String[] sides = {"b","w"};
@@ -594,6 +596,7 @@ public class Game {
         return re;
     }
 
+    // Haetaan mahdolliset ruudut joihin nappula voidaan siirtää
     private ArrayList<Rectangle> getAvailable (Piece pc){
         ArrayList<Rectangle> available = new ArrayList<>();
         String side = "";

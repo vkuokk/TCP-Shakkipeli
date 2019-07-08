@@ -51,7 +51,7 @@ public class Piece extends Button {
     }
 
 
-    public Piece(int side, int size){
+    public Piece(int side){
         this.side = side;
         this.setPickOnBounds(true);
     }

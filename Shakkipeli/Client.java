@@ -56,6 +56,8 @@ public class Client extends Thread {
             }
 
     }
+
+    // Säie sisään tulevalle liikenteelle
     private class trafficIn extends Thread{
         private Socket ssock;
         private String vastaanotettu;
@@ -66,7 +68,6 @@ public class Client extends Thread {
             this.start();
         }
         private void stopRunning(){
-            t_out.out("Lopetti pelin");
             try {
                 ssock.close();
             } catch (IOException e) {
@@ -116,6 +117,8 @@ public class Client extends Thread {
             }
         }
     }
+
+    // Ulospäin menevän liikenteen säie
     private class trafficOut extends Thread {
         private Socket csock;
         private DataOutputStream out;
@@ -145,9 +148,6 @@ public class Client extends Thread {
                 this.stopRunning();
             }
         }
-
-
-
         @Override
         public void run() {
             try {

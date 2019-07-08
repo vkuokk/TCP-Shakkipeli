@@ -67,8 +67,7 @@ public class Shakkicontroller implements Initializable{
 
     }
 
-
-
+    //Pelin alustaminen
     public void alusta(){
 
         fxIP.textProperty().addListener((observable, f, newIP) -> {
@@ -100,12 +99,13 @@ public class Shakkicontroller implements Initializable{
 
     }
 
-
+    // Käynnistetään palvelin
     public void startServer(){
         palvelin = new Server(Integer.parseInt(localPort), this);
         palvelin.start();
     }
 
+    // Pelin aloittaminen
     public void aloitaPeli(String puoli){
         createBoard();
         setPuoli(puoli);
@@ -138,26 +138,22 @@ public class Shakkicontroller implements Initializable{
         }
     }
 
+    // Tektsikenttään viestin lisääminen
     public void appendText(String text){
         Platform.runLater(() -> {
             if (puoli == "musta") fxChatfield.appendText("valkoinen: " + text + "\n");
             else fxChatfield.appendText("musta: " + text + "\n");
         });
     }
+
+    // Informaation lisääminen tekstikenttään
     public void appendInfo(String text){
         Platform.runLater(()-> {
             fxChatfield.appendText(text + "\n");
         });
     }
 
-
-
-
-
-
-
-
-
+    // Shakkilaudan luominen
     public void createBoard(){
 
         for (int i = 0; i<8; i++) {
@@ -182,6 +178,7 @@ public class Shakkicontroller implements Initializable{
     }
 
 
+    // Viestin lähettäminen vastustajalle, koordinaatit muunnetaan tässä
     public void sendMove(int xcoord, int ycoord, Piece ps){
         int mX = 7-xcoord;
         int mY = 7-ycoord;
@@ -193,6 +190,7 @@ public class Shakkicontroller implements Initializable{
 
     }
 
+    // Vastustajan siirron tulkinta
     public void interpretMove(String move){
         String[] split = move.split(" ");
         String xCoord = split[1];
