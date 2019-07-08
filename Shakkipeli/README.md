@@ -6,7 +6,7 @@ You will need both JavaFX and Java versions 12 or newer, older versions not test
 JavaFX: https://gluonhq.com/products/javafx/
 
 ### Prerequisites
-Instructions for setting environment variables for JavaFX can be found here: https://openjfx.io/openjfx-docs/#install-javafx
+Instructions for setting up environment variables for JavaFX can be found here: https://openjfx.io/openjfx-docs/#install-javafx
 
 #### Compiling from command line
 * windows
@@ -26,7 +26,7 @@ java --module-path %PATH_TO_FX% --add-modules javafx.controls,javafx.fxml Shakki
 ```
 * linux
 ```
-java --module-path $PATH_TO_FX --add-modules javafx.controls,javafx.fxml Shakkipeli.Main.
+java --module-path $PATH_TO_FX --add-modules javafx.controls,javafx.fxml Shakkipeli.Main
 ```
 
 
