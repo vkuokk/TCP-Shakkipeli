@@ -70,7 +70,6 @@ public class Client extends Thread {
             this.start();
         }
         public void stopRunning(){
-            t_out.out("Lopetti pelin");
             try {
                 ssock.close();
             } catch (IOException e) {
@@ -78,11 +77,6 @@ public class Client extends Thread {
             }
             this.running = false;
 
-        }
-
-        public String in(){
-
-            return "ei viestiä";
         }
 
         @Override
